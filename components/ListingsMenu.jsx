@@ -4,7 +4,7 @@ import { HiOutlineUserCircle } from "react-icons/hi";
 import { HiOutlineBriefcase } from "react-icons/hi";
 import { HiOutlineUserGroup } from "react-icons/hi";
 
-const LeftHomePage = ({ user }) => {
+const ListingsMenu = ({ user }) => {
   return (
     <div className="shadow-lg p-5 rounded-lg border-t-4 border-blue-400 sticky top-20">
         <div className="relative w-20 h-20 rounded-full overflow-hidden mx-auto flex items-center justify-center border-2 border-gray-400 shadow-lg">
@@ -22,20 +22,14 @@ const LeftHomePage = ({ user }) => {
         <div className="flex justify-center items-center">
             <hr className="border-t-2 border-gray-300 w-3/4 my-4" />
         </div>
-        <Link href={`/view_profile/${user._id}`}>
+        <Link href={`/view_listings/`}>
             <button className="bg-blue-400 text-white border border-blue-400 w-full font-bold py-1.5 px-5 transition-all hover:bg-white hover:text-blue-400 text-center text-sm font-inter flex items-center justify-center gap-2">
                 <HiOutlineBriefcase size={24}/>
                 <span>My Listings</span>
-            </button>
-        </Link>
-        <Link href={`/network/${user._id}`}>
-            <button className="bg-blue-400 text-white border border-blue-400 w-full font-bold py-1.5 px-5 mt-3 transition-all hover:bg-white hover:text-blue-400 text-center text-sm font-inter flex items-center justify-center gap-2">
-                <HiOutlineUserGroup size={24}/>
-                <span>Network</span>
             </button>
         </Link>
     </div>
   )
 }
 
-export default LeftHomePage
+export default ListingsMenu

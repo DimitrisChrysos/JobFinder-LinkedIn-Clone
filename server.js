@@ -1,29 +1,29 @@
-// const https = require('https');
-// const fs = require('fs');
-// const path = require('path');
-// const express = require('express');
-// const next = require('next');
+const https = require('https');
+const fs = require('fs');
+const path = require('path');
+const express = require('express');
+const next = require('next');
 
-// const dev = process.env.NODE_ENV !== 'production';
-// const app = next({ dev });
-// const handle = app.getRequestHandler();
+const dev = process.env.NODE_ENV !== 'production';
+const app = next({ dev });
+const handle = app.getRequestHandler();
 
-// const httpsOptions = {
-//     key: fs.readFileSync(path.join(__dirname,  
-//         "certificates", "key.pem")), 
-//     cert: fs.readFileSync(path.join(__dirname, 
-//         "certificates", "cert.pem")), 
-// };
+const httpsOptions = {
+    key: fs.readFileSync(path.join(__dirname,  
+        "certificates", "key.pem")), 
+    cert: fs.readFileSync(path.join(__dirname, 
+        "certificates", "cert.pem")), 
+};
 
-// app.prepare().then(() => {
-//   const server = express();
+app.prepare().then(() => {
+  const server = express();
 
-//   server.all('*', (req, res) => {
-//     return handle(req, res);
-//   });
+  server.all('*', (req, res) => {
+    return handle(req, res);
+  });
 
-//   https.createServer(httpsOptions, server).listen(3000, err => {
-//     if (err) throw err;
-//     console.log('> Ready on https://localhost:3000');
-//   });
-// });
+  https.createServer(httpsOptions, server).listen(3000, err => {
+    if (err) throw err;
+    console.log('> Ready on https://localhost:3000');
+  });
+});
