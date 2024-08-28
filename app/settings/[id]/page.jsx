@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { getUserById } from "@utils/getUserFromID";
 import { useSession } from "next-auth/react";
-import SettingsPage from "@components/settings";
+import SettingsPage from "@components/Settings";
 import Loading from "@components/Loading";
 
 const Settings = ({ params }) => {
