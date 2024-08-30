@@ -146,10 +146,14 @@ const createMatrixR = async (n, m, users, posts) => {
 
                 // Fill the matrix with the ratings
                 if (usersConnected) {
-                    matrix[i][j] = 1;
+                    if (likes + comments >= 1) {
+                        matrix[i][j] = 5*(likes + comments);
+                    } else {
+                        matrix[i][j] = 5;
+                    }
                 }
                 matrix[i][j] += likes + comments + timePoints;
-                console.log("post: ", post._id, "user: ", user.name, "rating: ", matrix[i][j], "i: ", i, "j: ", j);
+                // console.log("post: ", post._id, "user: ", user.name, "rating: ", matrix[i][j], "i: ", i, "j: ", j);
             }
         }
 
@@ -160,19 +164,83 @@ const createMatrixR = async (n, m, users, posts) => {
     }
 };
 
+// Matrix Factorization
+const matrixFactorization = async (R, P, Q, K, alpha, beta, steps) => {
+    try {
+        // TODO: fill in the code for matrix factorization
+        for (let step = 0; step < steps; step++) {
+            for (let i = 0; i < R.length; i++) {
+                for (let j = 0; j < R[i].length; j++) {
+                    if (R[i][j] > 0) {
+                        let eij = R[i][j] - P[i].reduce((acc, val, idx) => acc + val * Q[idx][j], 0);
+                        for (let k = 0; k < K; k++) {
+                            P[i][k] = P[i][k] + alpha * (2 * eij * Q[k][j] - beta * P[i][k]);
+                            Q[k][j] = Q[k][j] + alpha * (2 * eij * P[i][k] - beta * Q[k][j]);
+                        }
+                    }
+                }
+            }
+            
+            
+            let e = 0;
+            for (let i = 0; i < R.length; i++) {
+                for (let j = 0; j < R[i].length; j++) {
+                    if (R[i][j] > 0) {
+                        e += Math.pow(R[i][j] - P[i].reduce((acc, val, idx) => acc + val * Q[idx][j], 0), 2);
+                        for (let k = 0; k < K; k++) {
+                            e += (beta / 2) * (Math.pow(P[i][k], 2) + Math.pow(Q[k][j], 2));
+                        }
+                    }
+                }
+            }
+            if (e < 0.001) {
+                break;
+            }
+        }
+        return { P, Q };
+
+    } catch (error) {
+        console.log("An error occurred while performing matrix factorization:", error);
+        throw error;
+    }
+}
+
 export async function managePosts(posts) {
-
-    // Matrix Factorization
-
     try {
         // Get the users and posts
         const users = await getUsers();
         const posts = await getPosts();
 
-        // Create the R table with users and posts
-        const rTable = await createMatrixR(users.length, posts.length, users, posts);
-        console.log("rTable: ", rTable);
+        // Get the table dimensions
+        const n = users.length;
+        const m = posts.length;
 
+        // Create the R table with users and posts
+        const rTable = await createMatrixR(n, m, users, posts);
+        console.log("rTable: ", rTable);
+        
+        // TODO: try different values for K until the best one is found
+        const K = 2; // Set the number of latent features K
+        const alpha = 0.0002; // Set the learning rate alpha
+        const beta = 0.002; // Set the regularization parameter beta
+        const steps = 1000; // Set the number of iterations
+
+        // Create the P(n*K) and Q(K*m) matrices
+        const pTable = Array(n).fill().map(() => Array(K).fill().map(() => Math.random()));
+        const qTable = Array(K).fill().map(() => Array(m).fill().map(() => Math.random()));
+        console.log("pTable: ", pTable, "qTable: ", qTable);
+
+        // Perform matrix factorization on the R table
+        const { P: newP, Q: newQ } = await matrixFactorization(rTable, pTable, qTable, K, alpha, beta, steps);
+        
+        const R_hat = Array(rTable.length).fill(0).map(() => Array(newQ[0].length).fill(0));
+        for (let i = 0; i < newP.length; i++) {
+            for (let j = 0; j < newQ[0].length; j++) {
+                R_hat[i][j] = newP[i].reduce((acc, val, idx) => acc + val * newQ[idx][j], 0);
+            }
+        }
+        console.log("R_hat: ", R_hat);
+        console.log("newP: ", newP, "newQ: ", newQ);
 
     } catch (error) {
         console.log("An error occurred while managing posts:", error);
