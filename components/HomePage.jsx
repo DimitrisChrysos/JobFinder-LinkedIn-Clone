@@ -8,6 +8,7 @@ import LeftHomePage from "./LeftHomePage";
 import RightHomePage from "./RightHomePage";
 import TopHomeBar from "./TopHomeBar";
 import Loading from "./Loading";
+import { managePosts } from "@utils/managePosts";
 
 const HomePage = () => {
 
@@ -94,14 +95,13 @@ const HomePage = () => {
 
           // Set the posts state once at the end and remove potential duplicates
           const uniquePosts = Array.from(new Map(tempPosts.map(post => [post._id, post])).values());
+          managePosts();
           setPosts(uniquePosts);
       } catch (error) {
           console.error('Error fetching posts:', error);
       }
     };
     
-    console.log("session: ", session);
-
     if (session?.user.id) {
       fetchProfile();
       getPosts();
