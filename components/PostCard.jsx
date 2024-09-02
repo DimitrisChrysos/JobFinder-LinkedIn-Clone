@@ -109,15 +109,17 @@ const PostCard = ({p, curUser}) => {
               
             {/* Avatar and Name */}
             <div className="flex items-center space-x-2 p-2">
-                <div className="relative w-10 h-10 rounded-full overflow-hidden border-2 border-gray-300 p-1">
+                <div className="relative w-10 h-10 rounded-full overflow-hidden border-2 border-gray-300">
                     <Link href={`/view_profile/${p.userId}`}>
-                        <Image 
-                            src={user?.path}
-                            alt='avatar' 
-                            layout="fill"
-                            objectFit="cover"
-                            className='absolute inset-0 w-full h-full cursor-pointer'  
-                        />
+                        <div className="relative w-full h-full">
+                            <Image 
+                                src={user ? user?.path : '/assets/logo_images/default-avatar-icon.jpg'}
+                                alt='avatar'
+                                layout="fill"
+                                objectFit="cover"
+                                className='absolute inset-0 w-full h-full cursor-pointer'  
+                            />
+                        </div>
                     </Link>
                 </div>
                 <div>
@@ -146,6 +148,7 @@ const PostCard = ({p, curUser}) => {
                     <div className="relative w-full mt-2 overflow-hidden flex items-center justify-center">
                     <Image 
                         src={p?.path.startsWith('/') ? p.path : `/${p.path}`}
+                        alt="avatar"                        
                         layout="responsive"
                         width={100}
                         height={100}
