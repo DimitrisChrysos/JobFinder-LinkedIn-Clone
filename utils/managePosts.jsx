@@ -153,7 +153,7 @@ const createMatrixR = async (n, m, users, posts) => {
                     }
                 }
                 matrix[i][j] += likes + comments + timePoints;
-                // console.log("post: ", post._id, "user: ", user.name, "rating: ", matrix[i][j], "i: ", i, "j: ", j);
+                console.log("post:", post.text, "\tuser:", user.name, "\trating", matrix[i][j], "\ti:", i, "\tj:", j);
             }
         }
 

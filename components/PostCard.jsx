@@ -226,16 +226,18 @@ const PostCard = ({p, curUser}) => {
 
                         {/* Add a comment */}
                         <div className="flex items-center space-x-2 p-2">
-                            <div className="relative w-12 h-12 min-w-[48px] min-h-[48px] rounded-full overflow-hidden border-2 border-gray-300 p-1">
-                                <Link href={`/view_profile/${curUser?._id}`}>
-                                    <Image 
-                                        src={curUser?.path}
-                                        alt='avatar' 
-                                        layout="fill"
-                                        objectFit="cover"
-                                        className='absolute inset-0 w-full h-full cursor-pointer'  
-                                    />
-                                </Link>
+                            <div className="relative w-12 h-12 min-w-[48px] min-h-[48px] rounded-full overflow-hidden border-2 border-gray-300">
+                                <div className="relative w-full h-full">
+                                    <Link href={`/view_profile/${curUser?._id}`}>
+                                        <Image
+                                            src={curUser ? curUser?.path : '/assets/logo_images/default-avatar-icon.jpg'}
+                                            alt='avatar' 
+                                            layout="fill"
+                                            objectFit="cover"
+                                            className='absolute inset-0 w-full h-full cursor-pointer'  
+                                        />
+                                    </Link>
+                                </div>
                             </div>
                             <textarea
                                 ref={textareaRef}
@@ -263,15 +265,17 @@ const PostCard = ({p, curUser}) => {
                                     return (
                                         <div className="ml-2 border-b p-2" key={comment?._id}>
                                             <div className="flex items-center space-x-2 p-2">
-                                                <div className="relative w-8 h-8 min-w-[32px] min-h-[32px] rounded-full overflow-hidden border-2 border-gray-300 p-1">
+                                                <div className="relative w-8 h-8 min-w-[32px] min-h-[32px] rounded-full overflow-hidden border-2 border-gray-300">
                                                     <Link href={`/view_profile/${comment?.userId?._id}`}>
-                                                        <Image 
-                                                            src={comment?.userId?.path}
-                                                            alt='avatar' 
-                                                            layout="fill"
-                                                            objectFit="cover"
-                                                            className='absolute inset-0 w-full h-full cursor-pointer'  
-                                                        />
+                                                        <div className="relative w-full h-full">
+                                                            <Image
+                                                                src={comment.userId.path ? comment?.userId?.path : '/assets/logo_images/default-avatar-icon.jpg'}
+                                                                alt='avatar' 
+                                                                layout="fill"
+                                                                objectFit="cover"
+                                                                className='absolute inset-0 w-full h-full cursor-pointer'  
+                                                            />
+                                                        </div>
                                                     </Link>
                                                 </div>
                                                 <div>
