@@ -1,5 +1,3 @@
-import { getUserById } from "./getUserFromID";
-
 const getUsers = async () => {
     try {
         const res = await fetch('/api/profile');
@@ -203,9 +201,55 @@ const matrixFactorization = async (R, P, Q, K, alpha, beta, steps) => {
         console.log("An error occurred while performing matrix factorization:", error);
         throw error;
     }
-}
+};
 
-export async function managePosts(posts) {
+// Post the matrix to the databse
+const postMatrix = async (matrix) => {
+    try {
+        const res = await fetch('/api/matrix-factorization/save-array', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                matrix
+            })
+        });
+        if (!res.ok) {
+            throw new Error('Failed to post the matrix');
+        }
+        const data = await res.json();
+        return data;
+    } catch (error) {
+        console.log("An error occurred while posting the matrix:", error);
+        throw error;
+    }
+};
+
+const getMatrix = async () => {
+    try {
+        const res = await fetch('/api/matrix-factorization/matrix-exists');
+        if (!res.ok) {
+            throw new Error('Failed to fetch the matrix');
+        }
+        const data = await res.json();
+        if (data.message === "Matrix exists") {
+            return data.data;
+        }
+        else if (data.message === "Matrix does not exist") {
+            return null;
+        }
+        else {
+            throw new Error('Failed to fetch the matrix: ' + data.error);
+        }
+    } catch (error) {
+        console.log("An error occurred while fetching the matrix:", error);
+        throw error;
+    }
+};
+
+// Start matrix factorization
+const startMatrixFactorization = async () => {
     try {
         // Get the users and posts
         const users = await getUsers();
@@ -242,8 +286,37 @@ export async function managePosts(posts) {
         console.log("R_hat: ", R_hat);
         console.log("newP: ", newP, "newQ: ", newQ);
 
+        // Post the matrix to the database
+        const matrix = R_hat;
+        const data = await postMatrix(matrix);
+    } catch (error) {
+        console.log("An error occurred while starting matrix factorization:", error);
+        throw error;
+    }
+};
+
+async function managePosts() {
+    try {
+
+        // Start the matrix factorization
+        await startMatrixFactorization();
+
     } catch (error) {
         console.log("An error occurred while managing posts:", error);
         throw error;
     }
 }
+
+
+// Function to run managePosts every 30 minutes
+async function runManagePostsPeriodically() {
+    console.log("\n\n!!\nTrexo to background managePosts\n!!\n\n")
+    await managePosts(); // Run immediately on start
+    setInterval(async () => {
+        await managePosts();
+    }, 30 * 60 * 1000); // 30 minutes in milliseconds
+}
+
+module.exports = {
+    runManagePostsPeriodically
+};
