@@ -1,8 +1,7 @@
 const fetch = require('node-fetch');
 const agent = require('../httpsAgent'); // Import the HTTPS agent
 
-const baseUrl = 'https://localhost:3000'
-// console.log(baseUrl);
+const baseUrl = 'https://localhost:3000'; // Base URL of the API
 
 const getUsers = async () => {
     try {
@@ -309,29 +308,16 @@ const startMatrixFactorization = async () => {
     }
 };
 
-async function managePosts() {
-    try {
-
-        // Start the matrix factorization
-        await startMatrixFactorization();
-
-    } catch (error) {
-        console.log("An error occurred while managing posts:", error);
-        throw error;
-    }
-}
-
-
-// Function to run managePosts every 30 minutes
-async function runManagePostsPeriodically() {
+// Function to run MatrixFactorization every 30 minutes
+async function runMatrixFactorizationPeriodically() {
     
     console.log("Running the Matrix Factorization, this process repeats every 30 minutes\n")
-    await managePosts(); // Run immediately on start
+    await startMatrixFactorization(); // Run immediately on start
     setInterval(async () => {
-        await managePosts();
+        await startMatrixFactorization();
     }, 30 * 60 * 1000); // 30 minutes in milliseconds
 }
 
 module.exports = {
-    runManagePostsPeriodically
+    runMatrixFactorizationPeriodically
 };

@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const express = require('express');
 const next = require('next');
-const { runManagePostsPeriodically } = require('./utils/managePosts.jsx');
+const { runMatrixFactorizationPeriodically } = require('./utils/matrixFactorization.jsx');
 
 const dev = process.env.NODE_ENV !== 'production';
 const app = next({ dev });
@@ -18,10 +18,6 @@ const httpsOptions = {
 
 app.prepare().then(() => {
   const server = express();
-
-  // Run the function when the server starts
-  // Run the managePostsPeriodically function every 30 minutes
-  // runManagePostsPeriodically();
   
   server.all('*', (req, res) => {
     return handle(req, res);
@@ -32,7 +28,7 @@ app.prepare().then(() => {
     console.log('> Ready on https://localhost:3000');
     
     // Run the managePostsPeriodically function every 30 minutes
-    runManagePostsPeriodically();
+    runMatrixFactorizationPeriodically();
   });
 
   
