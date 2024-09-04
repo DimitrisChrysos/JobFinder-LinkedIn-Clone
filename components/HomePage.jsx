@@ -8,7 +8,6 @@ import LeftHomePage from "./LeftHomePage";
 import RightHomePage from "./RightHomePage";
 import TopHomeBar from "./TopHomeBar";
 import Loading from "./Loading";
-import { getMatrix } from "@utils/managePosts";
 
 const HomePage = () => {
 

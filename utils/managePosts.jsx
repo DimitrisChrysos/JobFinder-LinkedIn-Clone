@@ -1,6 +1,13 @@
+const fetch = require('node-fetch');
+const agent = require('../httpsAgent'); // Import the HTTPS agent
+
+const baseUrl = 'https://localhost:3000'
+// console.log(baseUrl);
+
 const getUsers = async () => {
     try {
-        const res = await fetch('/api/profile');
+        const url = new URL('/api/profile', baseUrl);
+        const res = await fetch(url.toString(), { agent });
         if (!res.ok) {
             throw new Error('Failed to fetch users');
         }
@@ -16,7 +23,8 @@ const getUsers = async () => {
 
 const getPosts = async () => {
     try {
-        const res = await fetch('/api/post/get-all-posts');
+        const url = new URL('/api/post/get-all-posts', baseUrl);
+        const res = await fetch(url.toString(), { agent });
         if (!res.ok) {
             throw new Error('Failed to fetch posts');
         }
@@ -31,7 +39,8 @@ const getPosts = async () => {
 
 const getUserPosts = async (userId) => {
     try {
-        const res = await fetch(`/api/post?id=${userId}`);
+        const url = new URL(`/api/post?id=${userId}`, baseUrl);
+        const res = await fetch(url.toString(), { agent });
         if (!res.ok) {
             throw new Error('Failed to fetch user posts');
         }
@@ -67,7 +76,8 @@ const getLikesAndComments = async (user, post) => {
 
 const areConnected = async (user, post) => {
     try {
-        const res = await fetch(`/api/connections/are-connected`, {
+        const url = new URL(`/api/connections/are-connected`, baseUrl);
+        const res = await fetch(url.toString(), {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -75,7 +85,8 @@ const areConnected = async (user, post) => {
             body: JSON.stringify({
                 id1: user._id,
                 id2: post.userId
-            })
+            }),
+            agent: agent
         });
         if (!res.ok) {
             throw new Error('Failed to check if users are connected');
@@ -151,7 +162,7 @@ const createMatrixR = async (n, m, users, posts) => {
                     }
                 }
                 matrix[i][j] += likes + comments + timePoints;
-                console.log("post:", post.text, "\tuser:", user.name, "\trating", matrix[i][j], "\ti:", i, "\tj:", j);
+                // console.log("post:", post.text, "\tuser:", user.name, "\trating", matrix[i][j], "\ti:", i, "\tj:", j);
             }
         }
 
@@ -206,14 +217,16 @@ const matrixFactorization = async (R, P, Q, K, alpha, beta, steps) => {
 // Post the matrix to the databse
 const postMatrix = async (matrix) => {
     try {
-        const res = await fetch('/api/matrix-factorization/save-array', {
+        const url = new URL('/api/matrix-factorization/save-array', baseUrl);
+        const res = await fetch(url.toString(), {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
                 matrix
-            })
+            }),
+            agent: agent
         });
         if (!res.ok) {
             throw new Error('Failed to post the matrix');
@@ -228,7 +241,8 @@ const postMatrix = async (matrix) => {
 
 const getMatrix = async () => {
     try {
-        const res = await fetch('/api/matrix-factorization/matrix-exists');
+        const url = new URL('/api/matrix-factorization/matrix-exists', baseUrl);
+        const res = await fetch(url.toString(), { agent });
         if (!res.ok) {
             throw new Error('Failed to fetch the matrix');
         }
@@ -272,7 +286,7 @@ const startMatrixFactorization = async () => {
         // Create the P(n*K) and Q(K*m) matrices
         const pTable = Array(n).fill().map(() => Array(K).fill().map(() => Math.random()));
         const qTable = Array(K).fill().map(() => Array(m).fill().map(() => Math.random()));
-        console.log("pTable: ", pTable, "qTable: ", qTable);
+        // console.log("pTable: ", pTable, "qTable: ", qTable);
 
         // Perform matrix factorization on the R table
         const { P: newP, Q: newQ } = await matrixFactorization(rTable, pTable, qTable, K, alpha, beta, steps);
@@ -284,7 +298,7 @@ const startMatrixFactorization = async () => {
             }
         }
         console.log("R_hat: ", R_hat);
-        console.log("newP: ", newP, "newQ: ", newQ);
+        // console.log("newP: ", newP, "newQ: ", newQ);
 
         // Post the matrix to the database
         const matrix = R_hat;
@@ -310,7 +324,8 @@ async function managePosts() {
 
 // Function to run managePosts every 30 minutes
 async function runManagePostsPeriodically() {
-    console.log("\n\n!!\nTrexo to background managePosts\n!!\n\n")
+    
+    console.log("Running the Matrix Factorization, this process repeats every 30 minutes\n")
     await managePosts(); // Run immediately on start
     setInterval(async () => {
         await managePosts();
