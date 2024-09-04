@@ -135,13 +135,23 @@ const createMatrixR = async (n, m, users, posts) => {
 
     try {
         // Create a matrix with n rows and m columns
-        const matrix = Array(n).fill().map(() => Array(m).fill(0));
+        const matrix = Array(n+1).fill().map(() => Array(m+1).fill(0));
     
+        // Fill the first row with post IDs
+        for (let j = 1; j <= m; j++) {
+            matrix[0][j] = posts[j - 1]._id;
+        }
+
+        // Fill the first column with user IDs
+        for (let i = 1; i <= n; i++) {
+            matrix[i][0] = users[i - 1]._id;
+        }
+
         // Fill the table with the ratings
-        for (let i = 0 ; i < n ; i++) {
-            for (let j = 0 ; j < m ; j++) {
-                const user = users[i];
-                const post = posts[j];
+        for (let i = 1 ; i <= n ; i++) {
+            for (let j = 1 ; j <= m ; j++) {
+                const user = users[i - 1];
+                const post = posts[j - 1];
                 
                 // Get how many likes and comments a user has given to the creator of the post
                 const { likesCounter: likes, commentsCounter: comments } = await getLikesAndComments(user, post);
@@ -188,7 +198,6 @@ const matrixFactorization = async (R, P, Q, K, alpha, beta, steps) => {
                     }
                 }
             }
-            
             
             let e = 0;
             for (let i = 0; i < R.length; i++) {
@@ -238,27 +247,27 @@ const postMatrix = async (matrix) => {
     }
 };
 
-const getMatrix = async () => {
-    try {
-        const url = new URL('/api/matrix-factorization/matrix-exists', baseUrl);
-        const res = await fetch(url.toString(), { agent });
-        if (!res.ok) {
-            throw new Error('Failed to fetch the matrix');
-        }
-        const data = await res.json();
-        if (data.message === "Matrix exists") {
-            return data.data;
-        }
-        else if (data.message === "Matrix does not exist") {
-            return null;
-        }
-        else {
-            throw new Error('Failed to fetch the matrix: ' + data.error);
-        }
-    } catch (error) {
-        console.log("An error occurred while fetching the matrix:", error);
-        throw error;
+const getFactorizedMatrix = async (R, newP, newQ, users, posts) => {
+    const R_hat = Array(R.length + 1).fill(0).map(() => Array(newQ[0].length + 1).fill(0));
+    
+    // Fill the first row with post IDs
+    for (let j = 1; j <= newQ[0].length; j++) {
+        R_hat[0][j] = posts[j - 1]._id;
     }
+    
+    // Fill the first column with user IDs
+    for (let i = 1; i <= newP.length; i++) {
+        R_hat[i][0] = users[i - 1]._id;
+    }
+    
+    // Fill the matrix with the calculated values
+    for (let i = 1; i <= newP.length; i++) {
+        for (let j = 1; j <= newQ[0].length; j++) {
+            R_hat[i][j] = newP[i - 1].reduce((acc, val, idx) => acc + val * newQ[idx][j - 1], 0);
+        }
+    }
+
+    return R_hat;
 };
 
 // Start matrix factorization
@@ -276,6 +285,9 @@ const startMatrixFactorization = async () => {
         const rTable = await createMatrixR(n, m, users, posts);
         console.log("rTable: ", rTable);
         
+        // Extract the actual ratings matrix without headers for matrix factorization
+        const R = rTable.slice(1).map(row => row.slice(1));
+
         // TODO: try different values for K until the best one is found
         const K = 2; // Set the number of latent features K
         const alpha = 0.0002; // Set the learning rate alpha
@@ -288,15 +300,11 @@ const startMatrixFactorization = async () => {
         // console.log("pTable: ", pTable, "qTable: ", qTable);
 
         // Perform matrix factorization on the R table
-        const { P: newP, Q: newQ } = await matrixFactorization(rTable, pTable, qTable, K, alpha, beta, steps);
+        const { P: newP, Q: newQ } = await matrixFactorization(R, pTable, qTable, K, alpha, beta, steps);
         
-        const R_hat = Array(rTable.length).fill(0).map(() => Array(newQ[0].length).fill(0));
-        for (let i = 0; i < newP.length; i++) {
-            for (let j = 0; j < newQ[0].length; j++) {
-                R_hat[i][j] = newP[i].reduce((acc, val, idx) => acc + val * newQ[idx][j], 0);
-            }
-        }
+        const R_hat = await getFactorizedMatrix(R, newP, newQ, users, posts);
         console.log("R_hat: ", R_hat);
+        
         // console.log("newP: ", newP, "newQ: ", newQ);
 
         // Post the matrix to the database

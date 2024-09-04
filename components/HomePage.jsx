@@ -8,6 +8,7 @@ import LeftHomePage from "./LeftHomePage";
 import RightHomePage from "./RightHomePage";
 import TopHomeBar from "./TopHomeBar";
 import Loading from "./Loading";
+import { selectPosts } from "@utils/selectPosts";
 
 const HomePage = () => {
 
@@ -41,6 +42,7 @@ const HomePage = () => {
 
     // Fetch all the posts from the current user, the user's connections and the posts
     // the connections have liked or commented on
+    
     const getPosts = async () => {
       try {
           let tempPosts = [];
@@ -94,16 +96,22 @@ const HomePage = () => {
 
           // Set the posts state once at the end and remove potential duplicates
           const uniquePosts = Array.from(new Map(tempPosts.map(post => [post._id, post])).values());
-          // managePosts();
           setPosts(uniquePosts);
       } catch (error) {
           console.error('Error fetching posts:', error);
       }
     };
     
+    const getPostsNew = async () => {
+      const posts = selectPosts();
+
+      // setPosts(posts);
+    };
+
     if (session?.user.id) {
       fetchProfile();
       getPosts();
+      getPostsNew(); // TODO: replace with getPosts() when finished
     }
   }, [session?.user.id, current_post_counter]);   // Dependency array with userId to re-run if userId changes
   
