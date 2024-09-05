@@ -43,7 +43,7 @@ const HomePage = () => {
     // Fetch all the posts from the current user, the user's connections and the posts
     // the connections have liked or commented on
     
-    const getPosts = async () => {
+    const getPostsOld = async () => {
       try {
           let tempPosts = [];
 
@@ -102,16 +102,18 @@ const HomePage = () => {
       }
     };
     
-    const getPostsNew = async () => {
-      const posts = selectPosts();
+    const getPosts = async () => {
+      const posts = await selectPosts(session?.user.id);
 
-      // setPosts(posts);
+      console.log("posts here 123: ", posts);
+
+      setPosts(posts);
     };
 
     if (session?.user.id) {
       fetchProfile();
       getPosts();
-      getPostsNew(); // TODO: replace with getPosts() when finished
+      // getPostsNew(); // TODO: replace with getPosts() when finished
     }
   }, [session?.user.id, current_post_counter]);   // Dependency array with userId to re-run if userId changes
   
@@ -146,7 +148,7 @@ const HomePage = () => {
         {/* For the middle page */}
         <div className="w-full h-full">
         {posts && posts
-          .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)) // Sort posts by date (latest first)
+          // .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)) // Sort posts by date (latest first)
           .map(p => (
             <PostCard p={p} curUser={user}/>    // Mh to peirakseis // key={p._id} //
           ))}
