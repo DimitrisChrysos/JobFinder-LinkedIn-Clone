@@ -8,15 +8,15 @@ export async function POST(req) {
         const {userId, text, path} = await req.json();
 
         await connectMongoDB(); // Connect to MongoDB
-
+        let post;
         if (!path)
-            await Post.create({ userId, text, path: "no-file" }); // If the path is not provided, set it to "no-file"
+            post = await Post.create({ userId, text, path: "no-file" }); // If the path is not provided, set it to "no-file"
         else if (text == "")
-            await Post.create({ userId, text: "no-text", path }); // If the text is not provided, set it to "no-text"
+            post = await Post.create({ userId, text: "no-text", path }); // If the text is not provided, set it to "no-text"
         else
-            await Post.create({ userId, text, path }); // Create the post
+            post = await Post.create({ userId, text, path }); // Create the post
         
-        return NextResponse.json({message: "Post Created."}, {status: 201}); // Return a success message
+        return NextResponse.json({message: "Post Created.", post}, {status: 201}); // Return a success message
     } catch (error) {
         return NextResponse.json({message: "An error occurred while creating the post."}, {status: 500});    // Return an error message
     }

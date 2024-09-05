@@ -2,7 +2,6 @@ import connectMongoDB from "@lib/mongodb";
 import { NextResponse } from "next/server";
 import Post from "@models/post";
 
-
 // Add view to the posts with postIds
 export async function PUT(req) {
     try {

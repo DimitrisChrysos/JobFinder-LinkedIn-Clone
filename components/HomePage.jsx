@@ -17,7 +17,7 @@ const HomePage = () => {
   const [user, setUser] = useState(null);
   const [posts, setPosts] = useState([]);
   const [error, setError] = useState(null);
-  const [current_post_counter, setCurrentPostCounter] = useState(0);
+  // const [currentPostCounter, setCurrentPostCounter] = useState(0);
   const postsPerIteration = 5;
   const [seenPostIndexStart, setSeenPostIndexStart] = useState(0);
   const [seenPostIndexEnd, setSeenPostIndexEnd] = useState(postsPerIteration);
@@ -58,7 +58,7 @@ const HomePage = () => {
       fetchProfile();
       getPosts();
     }
-  }, [session?.user.id, current_post_counter]);
+  }, [session?.user.id]);
 
   // Infinite scroll logic
   useEffect(() => {
@@ -85,7 +85,7 @@ const HomePage = () => {
       body: JSON.stringify({ postIds }),
     });
     if (!res.ok) {
-      throw new Error('Failed to add views to posts');
+      throw new Error('Failed to add a view to each posts');
     }
   }
 
@@ -165,7 +165,7 @@ const HomePage = () => {
 
         {/* For the right page */}
         <div className="mt-5 w-3/5">
-          <RightHomePage user={user} current_post_counter={current_post_counter} setCurrentPostCounter={setCurrentPostCounter} />
+          <RightHomePage user={user} posts={posts} setPosts={setPosts} />
         </div>
       </div>
     </div>
