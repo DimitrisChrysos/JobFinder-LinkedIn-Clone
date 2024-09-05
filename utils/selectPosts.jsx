@@ -1,6 +1,6 @@
 import { getMatrix } from "./getMatrix";
 
-export async function selectPosts(userId) {
+export async function selectPosts(userId, seenPostIndexStart, seenPostIndexEnd) {
     try {
         const matrix = await getMatrix();
         console.log("matrix here:", matrix);
@@ -19,9 +19,13 @@ export async function selectPosts(userId) {
         }));
 
         const sortedPairs = postValuePairs.sort((a, b) => b.value - a.value); // Sort in descending order
-        const top10Pairs = sortedPairs.slice(0, 10); // Select the top 10 pairs
+        const top10Pairs = sortedPairs.slice(seenPostIndexStart, seenPostIndexEnd); // Select the top 10 pairs
         const top10PostIds = top10Pairs.map(pair => pair.postId); // Extract the post IDs from the top 10 pairs
         console.log("top 10 post ids: ", top10PostIds);
+
+        if (top10PostIds.length === 0) {
+            return [];
+        }
 
         const res = await fetch('/api/post/get-posts-from-ids', {
             method: 'POST',
@@ -35,6 +39,7 @@ export async function selectPosts(userId) {
             throw new Error('Failed to fetch posts');
         }
         const data = await res.json();
+
         return data.posts;
         
     } catch (error) {

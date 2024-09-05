@@ -18,7 +18,12 @@ const HomePage = () => {
   const [error, setError] = useState(null);
   const [allPostsFetched, setAllPostsFetched] = useState(false);
   const [current_post_counter, setCurrentPostCounter] = useState(0);
-  
+  const postsPerIteration = 4;
+  const [seenPostIndexStart, setSeenPostIndexStart] = useState(0);
+  const [seenPostIndexEnd, setSeenPostIndexEnd] = useState(postsPerIteration);
+  const [isFetching, setIsFetching] = useState(false);
+
+
   // Redirect to admin page if the user is an admin
   if (session?.user.admin)
     redirect("/home_admin");
@@ -102,8 +107,9 @@ const HomePage = () => {
       }
     };
     
+    // Fetch initial posts
     const getPosts = async () => {
-      const posts = await selectPosts(session?.user.id);
+      const posts = await selectPosts(session?.user.id, seenPostIndexStart, seenPostIndexEnd);
 
       console.log("posts here 123: ", posts);
 
@@ -119,9 +125,45 @@ const HomePage = () => {
   
   useEffect(() => {
     if (posts.length !== 1 || posts[0] !== -1) {
-        setAllPostsFetched(true);
+      setAllPostsFetched(true);
     }
   }, [posts]);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.innerHeight + window.scrollY >= document.body.offsetHeight) {
+        loadMorePosts(); // Call your function when user reaches bottom
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+
+    // Cleanup the event listener on component unmount
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, [posts]);
+
+  const loadMorePosts = async () => {
+    if (isFetching) return; // Prevent multiple fetches
+    setIsFetching(true);
+
+    const newSeenPostIndexStart = seenPostIndexEnd;
+    const newSeenPostIndexEnd = seenPostIndexEnd + postsPerIteration;
+
+    const newPosts = await selectPosts(session?.user.id, newSeenPostIndexStart, newSeenPostIndexEnd);
+
+    if (newPosts.length === 0) {
+      setIsFetching(false);
+      return; // No more posts to fetch
+    }
+
+    setPosts(prevPosts => [...prevPosts, ...newPosts]);
+    setSeenPostIndexStart(newSeenPostIndexStart);
+    setSeenPostIndexEnd(newSeenPostIndexEnd);
+    setIsFetching(false);
+  };
+
 
   if (!allPostsFetched || !user) {
     return (
@@ -152,6 +194,7 @@ const HomePage = () => {
           .map(p => (
             <PostCard p={p} curUser={user}/>    // Mh to peirakseis // key={p._id} //
           ))}
+        {isFetching && <Loading />} {/* Show loading indicator while fetching */}
         </div>
 
         {/* For the right page */}
