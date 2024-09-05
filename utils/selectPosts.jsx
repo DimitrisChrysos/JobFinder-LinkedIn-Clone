@@ -18,28 +18,30 @@ export async function selectPosts(userId, seenPostIndexStart, seenPostIndexEnd) 
             value: actualRow[index]
         }));
 
-        const sortedPairs = postValuePairs.sort((a, b) => b.value - a.value); // Sort in descending order
-        const top10Pairs = sortedPairs.slice(seenPostIndexStart, seenPostIndexEnd); // Select the top 10 pairs
-        const top10PostIds = top10Pairs.map(pair => pair.postId); // Extract the post IDs from the top 10 pairs
-        console.log("top 10 post ids: ", top10PostIds);
+        // Sort the pairs by value in descending order, then select the top pairs
+        // and then extract the post IDs from the top pairs
+        const sortedPairs = postValuePairs.sort((a, b) => b.value - a.value);
+        const topPairs = sortedPairs.slice(seenPostIndexStart, seenPostIndexEnd);
+        const topPostIds = topPairs.map(pair => pair.postId);
 
-        if (top10PostIds.length === 0) {
+        // If there are no posts to select, return an empty array
+        if (topPostIds.length === 0) {
             return [];
         }
 
+        // Fetch the posts from the topPostIds from the server and return them
         const res = await fetch('/api/post/get-posts-from-ids', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ ids: top10PostIds }),
+            body: JSON.stringify({ ids: topPostIds }),
           });
 
         if (!res.ok) {
             throw new Error('Failed to fetch posts');
         }
         const data = await res.json();
-
         return data.posts;
         
     } catch (error) {

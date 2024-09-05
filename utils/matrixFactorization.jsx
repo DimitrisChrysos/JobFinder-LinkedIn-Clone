@@ -297,7 +297,6 @@ const startMatrixFactorization = async () => {
         // Create the P(n*K) and Q(K*m) matrices
         const pTable = Array(n).fill().map(() => Array(K).fill().map(() => Math.random()));
         const qTable = Array(K).fill().map(() => Array(m).fill().map(() => Math.random()));
-        // console.log("pTable: ", pTable, "qTable: ", qTable);
 
         // Perform matrix factorization on the R table
         const { P: newP, Q: newQ } = await matrixFactorization(R, pTable, qTable, K, alpha, beta, steps);
@@ -305,8 +304,6 @@ const startMatrixFactorization = async () => {
         const R_hat = await getFactorizedMatrix(R, newP, newQ, users, posts);
         console.log("R_hat: ", R_hat);
         
-        // console.log("newP: ", newP, "newQ: ", newQ);
-
         // Post the matrix to the database
         const matrix = R_hat;
         const data = await postMatrix(matrix);

@@ -29,7 +29,11 @@ const postSchema = new Schema({
         type: Array,
         default: []
     },
-    comment: [commentSchema]
+    comment: [commentSchema],
+    views: {
+        type: Number,
+        default: 0
+    }
 }, {timestamps: true});
 
 const Post = models.Post || mongoose.model("Post", postSchema);

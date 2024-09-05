@@ -9,19 +9,21 @@ import RightHomePage from "./RightHomePage";
 import TopHomeBar from "./TopHomeBar";
 import Loading from "./Loading";
 import { selectPosts } from "@utils/selectPosts";
+import { FaSpinner } from "react-icons/fa";
 
 const HomePage = () => {
 
   const { data: session } = useSession();
   const [user, setUser] = useState(null);
-  const [posts, setPosts] = useState([-1]);
+  const [posts, setPosts] = useState([]);
   const [error, setError] = useState(null);
-  const [allPostsFetched, setAllPostsFetched] = useState(false);
   const [current_post_counter, setCurrentPostCounter] = useState(0);
-  const postsPerIteration = 4;
+  const postsPerIteration = 5;
   const [seenPostIndexStart, setSeenPostIndexStart] = useState(0);
   const [seenPostIndexEnd, setSeenPostIndexEnd] = useState(postsPerIteration);
   const [isFetching, setIsFetching] = useState(false);
+  const [noMorePosts, setNoMorePosts] = useState(false);
+  const [curPostIteration, setCurPostIteration] = useState([]);
 
 
   // Redirect to admin page if the user is an admin
@@ -44,128 +46,83 @@ const HomePage = () => {
         setError(error.message);
       }
     };
-
-    // Fetch all the posts from the current user, the user's connections and the posts
-    // the connections have liked or commented on
-    
-    const getPostsOld = async () => {
-      try {
-          let tempPosts = [];
-
-          // Get the user's posts
-          const res = await fetch(`/api/post?id=${session?.user.id}`);
-          if (!res.ok) {
-              throw new Error('Failed to fetch posts');
-          }
-          const data = await res.json();
-          tempPosts = data.posts;
-
-          // Get the user's connections
-          const res1 = await fetch(`/api/connections/get-all-connections/${session?.user.id}`);
-          if (!res1.ok) {
-              throw new Error('Failed to fetch connections');
-          }
-          const data1 = await res1.json();
-
-          // Get all the posts from every connection of the user
-          for (const con of data1.data) {
-              const res2 = await fetch(`/api/post?id=${con._id}`);
-              if (!res2.ok) {
-                  throw new Error('Failed to fetch posts');
-              }
-              const data2 = await res2.json();
-              const connectionPosts = data2.posts;
-
-              // Update the tempPosts with the new posts if they don't already exist
-              const existingPostIds = new Set(tempPosts.map(post => post._id));
-              const newPosts = connectionPosts.filter(post => !existingPostIds.has(post._id));
-              tempPosts = [...tempPosts, ...newPosts];
-
-              // Get all the posts that the connections have liked or commented on
-              if (con.interactedWithPosts.length !== 0) {
-                  for (const postId of con.interactedWithPosts) {
-                      const res3 = await fetch(`/api/post/${postId}`);
-                      if (!res3.ok) {
-                          throw new Error('Failed to fetch post');
-                      }
-                      const data3 = await res3.json();
-                      const tempPost = data3.post;
-
-                      // Update the tempPosts with the new post if it doesn't already exist
-                      if (!existingPostIds.has(tempPost._id)) {
-                          tempPosts = [...tempPosts, tempPost];
-                      }
-                  }
-              }
-          }
-
-          // Set the posts state once at the end and remove potential duplicates
-          const uniquePosts = Array.from(new Map(tempPosts.map(post => [post._id, post])).values());
-          setPosts(uniquePosts);
-      } catch (error) {
-          console.error('Error fetching posts:', error);
-      }
-    };
     
     // Fetch initial posts
     const getPosts = async () => {
       const posts = await selectPosts(session?.user.id, seenPostIndexStart, seenPostIndexEnd);
-
-      console.log("posts here 123: ", posts);
-
       setPosts(posts);
+      setCurPostIteration(posts);
     };
 
     if (session?.user.id) {
       fetchProfile();
       getPosts();
-      // getPostsNew(); // TODO: replace with getPosts() when finished
     }
-  }, [session?.user.id, current_post_counter]);   // Dependency array with userId to re-run if userId changes
-  
-  useEffect(() => {
-    if (posts.length !== 1 || posts[0] !== -1) {
-      setAllPostsFetched(true);
-    }
-  }, [posts]);
+  }, [session?.user.id, current_post_counter]);
 
+  // Infinite scroll logic
   useEffect(() => {
-    const handleScroll = () => {
-      if (window.innerHeight + window.scrollY >= document.body.offsetHeight) {
-        loadMorePosts(); // Call your function when user reaches bottom
+    const handleScroll = debounce(() => {
+      if (noMorePosts || isFetching) return;
+
+      if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 100) {
+        loadMorePosts();
       }
-    };
+    }, 200);
 
     window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [isFetching, noMorePosts, seenPostIndexEnd, session?.user.id, curPostIteration]);
 
-    // Cleanup the event listener on component unmount
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-    };
-  }, [posts]);
+  // Add views to the posts
+  const addViews = async () => {
+    const postIds = curPostIteration.map(p => p._id);
+    const res = await fetch('/api/post/views', {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ postIds }),
+    });
+    if (!res.ok) {
+      throw new Error('Failed to add views to posts');
+    }
+  }
 
+  // Load more posts
   const loadMorePosts = async () => {
-    if (isFetching) return; // Prevent multiple fetches
-    setIsFetching(true);
 
+    setIsFetching(true);
     const newSeenPostIndexStart = seenPostIndexEnd;
     const newSeenPostIndexEnd = seenPostIndexEnd + postsPerIteration;
 
     const newPosts = await selectPosts(session?.user.id, newSeenPostIndexStart, newSeenPostIndexEnd);
-
+    console.log("newPosts here:", newPosts);
     if (newPosts.length === 0) {
-      setIsFetching(false);
-      return; // No more posts to fetch
+      await addViews();
+      setNoMorePosts(true);
+    } else {
+      setPosts(prevPosts => [...prevPosts, ...newPosts]);
+      await addViews();
+      setCurPostIteration(newPosts);
+      setSeenPostIndexStart(newSeenPostIndexStart);
+      setSeenPostIndexEnd(newSeenPostIndexEnd);
     }
-
-    setPosts(prevPosts => [...prevPosts, ...newPosts]);
-    setSeenPostIndexStart(newSeenPostIndexStart);
-    setSeenPostIndexEnd(newSeenPostIndexEnd);
     setIsFetching(false);
   };
 
+  // Debounce function to prevent too many scroll events
+  const debounce = (func, delay) => {
+    let timer;
+    return (...args) => {
+      clearTimeout(timer);
+      timer = setTimeout(() => {
+        func(...args);
+      }, delay);
+    };
+  };
 
-  if (!allPostsFetched || !user) {
+  if (!user) {
     return (
       <Loading />
     );
@@ -188,22 +145,29 @@ const HomePage = () => {
         </div>
 
         {/* For the middle page */}
-        <div className="w-full h-full">
-        {posts && posts
-          // .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)) // Sort posts by date (latest first)
-          .map(p => (
-            <PostCard p={p} curUser={user}/>    // Mh to peirakseis // key={p._id} //
-          ))}
-        {isFetching && <Loading />} {/* Show loading indicator while fetching */}
+        <div className="w-full h-full mb-10">
+          {(posts.length && curPostIteration.length) ? posts.map(p => (
+              <PostCard p={p} curUser={user}/>
+            )) :
+              <Loading /> 
+            }
+            {isFetching && 
+              <div className="flex flex-col justify-center items-center mt-10">
+                <FaSpinner className="animate-spin text-4xl text-blue-400" />
+                <span className="text-lg font-semibold text-gray-700">Loading Posts...</span>
+              </div>}
+            {noMorePosts &&
+              <div>
+                <span className="flex flex-col justify-center items-center mt-5 text-base font-semibold text-gray-400">No more posts to show.</span>
+              </div>
+            }
         </div>
 
         {/* For the right page */}
         <div className="mt-5 w-3/5">
           <RightHomePage user={user} current_post_counter={current_post_counter} setCurrentPostCounter={setCurrentPostCounter} />
         </div>
-
       </div>
-      
     </div>
   )
 }

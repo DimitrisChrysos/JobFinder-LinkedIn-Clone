@@ -6,7 +6,6 @@ import Post from "@models/post";
 export async function POST(req) {
     try {
         const { ids } = await req.json();
-        console.log("ids inside API: ", ids);
         await connectMongoDB(); // Connect to MongoDB
         const posts = await Post.find({ _id: { $in: ids } }); // Get the posts
 
@@ -19,8 +18,6 @@ export async function POST(req) {
 
         // Sort the posts based on the order of the ids array
         const sortedPosts = ids.map(id => postMap.get(id)).filter(post => post !== undefined);
-
-        console.log("sortedPosts inside API: ", sortedPosts);
 
         return NextResponse.json({posts: sortedPosts }); // Return the posts
     } catch (error) {
