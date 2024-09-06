@@ -29,3 +29,24 @@ export async function PUT(req) {
         );
     }
 }
+
+// Get the views of the post with postId
+export async function GET(req) {
+    try {
+        const postId = req.nextUrl.searchParams.get("postId");
+        await connectMongoDB(); // Connect to MongoDB
+        const post = await Post.findOne({ _id: postId }); // Find the post
+        if (!post) {
+            return NextResponse.json({ message: `Post not found for postId: ${postId}` }, { status: 404 }); // Return a 404 if the post is not found
+        }
+        return NextResponse.json(
+            { views: post.views }, 
+            { status: 200 }
+        );
+    } catch (error) {
+        return NextResponse.json(
+            { message: `An error occurred while fetching the views: ${error.message}` },
+            { status: 500 }
+        );        
+    }
+}

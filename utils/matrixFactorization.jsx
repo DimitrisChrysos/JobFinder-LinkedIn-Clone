@@ -131,6 +131,37 @@ const getTimePoints = async (post) => {
     }
 };
 
+const getViews = async (postId) => {
+    try {
+        const url = new URL(`/api/post/views?postId=${postId}`, baseUrl);
+        const res = await fetch(url.toString(), { agent });
+        if (!res.ok) {
+            throw new Error('Failed to fetch views');
+        }
+        const data = await res.json();
+        return data.views;
+    } catch (error) {
+        console.log("An error occurred while getting the views:", error);
+        throw error;
+    }
+}
+
+const userHasNoLikesAndComments = async (userId) => {
+    try {
+        const url = new URL(`/api/post/user-has-no-likes-and-comments?userId=${userId}`, baseUrl);
+        const res = await fetch(url.toString(), { agent });
+        if (!res.ok) {
+            throw new Error('Failed to check if user has no likes and comments');
+        }
+        const data = await res.json();
+        return data.hasNoLikesComments;
+    } catch (error) {
+        console.log("An error occurred while checking if user has no likes and comments:", error);
+        throw error;        
+    }
+
+}
+
 const createMatrixR = async (n, m, users, posts) => {
 
     try {
@@ -149,29 +180,41 @@ const createMatrixR = async (n, m, users, posts) => {
 
         // Fill the table with the ratings
         for (let i = 1 ; i <= n ; i++) {
+            const user = users[i - 1];
+
+            const hasNoLikesComments = await userHasNoLikesAndComments(user._id);
             for (let j = 1 ; j <= m ; j++) {
-                const user = users[i - 1];
                 const post = posts[j - 1];
-                
-                // Get how many likes and comments a user has given to the creator of the post
-                const { likesCounter: likes, commentsCounter: comments } = await getLikesAndComments(user, post);
-     
+
                 // Get if the user is connected with the creator of the post
                 const usersConnected = await areConnected(user, post);
                 
-                // Check how resently the post was created
-                const timePoints = await getTimePoints(post);
-
-                // Fill the matrix with the ratings
-                if (usersConnected) {
-                    if (likes + comments >= 1) {
-                        matrix[i][j] = 5*(likes + comments);
+                if (hasNoLikesComments) {
+                    // Get the views of the post and add them to the matrix
+                    const views = await getViews(post._id);
+                    if (usersConnected) {
+                        matrix[i][j] = 2*views;
                     } else {
-                        matrix[i][j] = 5;
+                        matrix[i][j] = views;
                     }
+                } else {
+                    // Get how many likes and comments a user has given to the creator of the post
+                    const { likesCounter: likes, commentsCounter: comments } = await getLikesAndComments(user, post);
+                    
+                    // Check how resently the post was created
+                    const timePoints = await getTimePoints(post);
+    
+                    // Fill the matrix with the ratings
+                    if (usersConnected) {
+                        if (likes + comments >= 1) {
+                            matrix[i][j] = 2*(likes + comments);
+                        } else {
+                            matrix[i][j] = 2;
+                        }
+                    }
+                    matrix[i][j] += likes + comments + timePoints;
+                    // console.log("post:", post.text, "\tuser:", user.name, "\trating", matrix[i][j], "\ti:", i, "\tj:", j);
                 }
-                matrix[i][j] += likes + comments + timePoints;
-                // console.log("post:", post.text, "\tuser:", user.name, "\trating", matrix[i][j], "\ti:", i, "\tj:", j);
             }
         }
 

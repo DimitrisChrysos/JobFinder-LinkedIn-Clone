@@ -50,6 +50,10 @@ const HomePage = () => {
     // Fetch initial posts
     const getPosts = async () => {
       const posts = await selectPosts(session?.user.id, seenPostIndexStart, seenPostIndexEnd);
+      if (posts.length === 0) {
+        setNoMorePosts(true);
+        return;
+      }
       setPosts(posts);
       setCurPostIteration(posts);
     };
@@ -146,10 +150,17 @@ const HomePage = () => {
 
         {/* For the middle page */}
         <div className="w-full h-full mb-10">
-          {(posts.length && curPostIteration.length) ? posts.map(p => (
+          {(posts && posts.length && curPostIteration.length) ? posts.map(p => (
               <PostCard p={p} curUser={user}/>
             )) :
-              <Loading /> 
+            <>
+              {noMorePosts ?
+                <div>
+                  <span className="flex flex-col justify-center items-center mt-5 text-base font-semibold text-gray-400">No more posts to show.</span>
+                </div> :
+                  <Loading /> 
+              }
+            </>
             }
             {isFetching && 
               <div className="flex flex-col justify-center items-center mt-10">
