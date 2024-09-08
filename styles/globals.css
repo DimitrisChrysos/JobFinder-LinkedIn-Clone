@@ -37,6 +37,14 @@ input {
   background-color: lightgreen; /* Optional: for visual distinction */
 }
 
+.nav_btn {
+  @apply py-1.5 px-4 text-base border border-white text-blue-400 bg-white rounded-full transition duration-300 ease-in-out;
+}
+
+.nav_btn:hover {
+  @apply hover:border-blue-400 text-blue-400;
+}
+
 /* till here, the styles are mine */
 
 

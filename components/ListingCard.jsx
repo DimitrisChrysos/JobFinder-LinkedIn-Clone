@@ -106,7 +106,7 @@ const ListingCard = ({p, curUser}) => {
                     </Link>
                 </div>
                 <div>
-                    <span className="font-bold">{user?.name} {user?.surname}</span>
+                    <span className="text-gray-900">{user?.name} {user?.surname}</span>
                 </div>
             </div>
 

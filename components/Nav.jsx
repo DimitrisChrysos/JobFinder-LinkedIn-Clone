@@ -45,7 +45,7 @@ const Nav = () => {
   return (
     
     // Navigation bar
-    <nav className='fixed top-0 left-0 w-full bg-white z-50 shadow-md flex justify-between items-center px-4 py-3'>
+    <nav className='fixed top-0 left-0 w-full bg-white z-50 shadow-md flex justify-between items-center px-3 py-3'>
 
       {/* Logo */}
       <Link href={session?.user ? '/home' : '/'} className='flex gap-2 flex-center'>
@@ -66,29 +66,32 @@ const Nav = () => {
       {/* If the user is signed in, display the Sign Out and Home buttons
           If the user is not signed in, display the Sign In and Register buttons */}
       {session?.user ? (
-        <div className="flex items-center gap-4">
-          <button type='button' onClick={handleSignOut} className='blue_btn'>
+        <div className="flex items-center space-x-3">
+          <button 
+            type='button' 
+            onClick={handleSignOut} 
+            className='nav_btn'>
               Sign Out
           </button>
 
           {/* If admin user management page else home*/}
           {session?.user?.admin ? (
             <>
-              <Link href='/conversations' className='blue_btn'>
+              <Link href='/conversations' className='nav_btn'>
                 Chats
               </Link>
-              <Link href='/home_admin' className='blue_btn'>
+              <Link href='/home_admin' className='nav_btn'>
                 Home
               </Link>
             </>
           ) : (
-            <Link href='/home' className='blue_btn'>
+            <Link href='/home' className='nav_btn'>
               Home
             </Link>
           )}
 
-          {user?.path ? (
-            <Link href={`/view_profile/${session.user?.id}`} className='flex gap-2 flex-center'>
+          {user?.path && (
+            <Link href={`/view_profile/${session.user?.id}`} className='flex gap-2 flex-center pl-4'>
               <div className="relative w-10 h-10 rounded-full overflow-hidden border-2 border-gray-300 p-1">
                 <Image 
                   src={user?.path}
@@ -99,18 +102,16 @@ const Nav = () => {
                 />
               </div>
             </Link>
-          ) : (
-            <div className="text-xs">Loading<br />Avatar...</div>
           )}
         </div>
         
       ) : (
         <div className="flex gap-4">
-          <Link href='/sign-in' className='blue_btn'>
+          <Link href='/sign-in' className='nav_btn'>
             Sign In
           </Link>
 
-          <Link href='/register' className='blue_btn'>
+          <Link href='/register' className='nav_btn'>
             Register
           </Link>
         </div>
