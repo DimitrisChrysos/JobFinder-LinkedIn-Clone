@@ -2,15 +2,16 @@ import connectMongoDB from "@lib/mongodb";
 import { NextResponse } from "next/server";
 import Listing from "@models/listing";
 
-// Add view to the listings with listingsIds
+// Add view to the listings of listingIds
 export async function PUT(req) {
     try {
-        const { listingsIds } = await req.json();
-        if (listingsIds.length === 0) {
-            return NextResponse.json({ message: "No listingsIds provided." }, { status: 400 });
+        const { listingIds } = await req.json();
+        console.log("listingIds here:", listingIds);
+        if (listingIds.length === 0) {
+            return NextResponse.json({ message: "No listingIds provided." }, { status: 400 });
         }
         await connectMongoDB(); // Connect to MongoDB
-        for (const listingId of listingsIds) {
+        for (const listingId of listingIds) {
             const listing = await Listing.findOne({ _id: listingId }); // Find the listing
             if (!listing) {
                 return NextResponse.json({message: `Listing not found for listingId: ${listing._id}`}, {status: 404}); // Return a 404 if the listing is not found

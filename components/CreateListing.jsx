@@ -1,12 +1,8 @@
 import { useEffect, useRef, useState } from "react";
-import Image from "next/image";
-import Link from "next/link";
-import { HiOutlineBell, HiOutlineBriefcase, HiOutlineChat, HiOutlineCog, HiOutlinePhotograph, HiOutlineThumbUp, HiOutlineUpload, HiOutlineUserCircle, HiX } from "react-icons/hi";
-import { HiOutlineUserGroup } from "react-icons/hi";
+import { HiOutlineUpload, HiX } from "react-icons/hi";
 import { join } from "path";
-import { HiOutlineHome } from "react-icons/hi";
 
-const CreateListing = ({ user, current_listing_counter, setCurrentListingCounter}) => {
+const CreateListing = ({ user, listings, setListings}) => {
     const fileInputRef = useRef(null);
     const [file , setFile] = useState(null);
     const [job_pos, setJobPos] = useState("");
@@ -96,56 +92,76 @@ const CreateListing = ({ user, current_listing_counter, setCurrentListingCounter
 
     // Function to create a post
     const makeListing = async () => {
-        const path = file ? join('assets', 'listing_files', `${user.listing_counter}_${user.email}_${file.name}`) 
-        : null;
-        
-        const res = await fetch("/api/listing", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({userId: user._id, job_pos, description, path})
-        });
 
-        
-        
-        // If the request is successful, update the user's profile
-        if (!res.ok) {
-            console.log("Listing creation failed.");
-        } else {
-            await updateProfile();
-        }
-        
-        setCurrentListingCounter(current_listing_counter + 1);
+      // Fetch request to create a listing
+      const path = 
+      file ? 
+        join('assets', 'listing_files', `${user.listing_counter}_${user.email}_${file.name}`) 
+      : 
+        null;
+      const res = await fetch("/api/listing", {
+      method: "POST",
+      headers: {
+          "Content-Type": "application/json"
+      },
+      body: JSON.stringify({userId: user._id, job_pos, description, path})
+      });
+      if (!res.ok) {
+        console.log("Post creation failed.");
+      }
+      const data = await res.json();
+      const listing = data.listing;
+
+      // Add a view to the listing
+      const res1 = await fetch('/api/listing/views', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ listingIds : [ listing._id ] }),
+      });
+      if (!res1.ok) {
+        throw new Error('Failed to add a view to listing');
+      }
+
+      // To view the listings at the top of the listings
+      setListings([listing, ...listings]);
+      
+      // If the request is successful, update the user's profile
+      if (!res.ok) {
+          console.log("Listing creation failed.");
+      } else {
+          await updateProfile();
+      }
     }
 
     // Function to update the user's profile by adding one to the post_counter
     const updateProfile = async () => {
-        try {
+      try {
 
-        // Fetch request to update the user's profile
-        const res = await fetch(`/api/profile/${user._id}`, {
-            method: "PUT",
-            headers: {
-            "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-            newName: user.name, 
-            newSurname: user.surname, 
-            newEmail: user.email, 
-            newPhoneNumber: user.phone_number, 
-            newPath: user.path,
-            newPostCounter: user.post_counter,
-            newListingCounter: user.listing_counter + 1
-            })
-        });
+      // Fetch request to update the user's profile
+      const res = await fetch(`/api/profile/${user._id}`, {
+          method: "PUT",
+          headers: {
+          "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+          newName: user.name, 
+          newSurname: user.surname, 
+          newEmail: user.email, 
+          newPhoneNumber: user.phone_number, 
+          newPath: user.path,
+          newPostCounter: user.post_counter,
+          newListingCounter: user.listing_counter + 1
+          })
+      });
 
-        if (!res.ok) {
-            throw new Error("Failed to update user data");
-        }
-        } catch (error) {
-            console.log(error);
-        }
+      if (!res.ok) {
+          throw new Error("Failed to update user data");
+      }
+      } catch (error) {
+          console.log(error);
+      }
     }
 
     return (

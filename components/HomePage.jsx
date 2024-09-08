@@ -153,11 +153,8 @@ const HomePage = () => {
               <PostCard p={p} curUser={user}/>
             )) :
             <>
-              {noMorePosts ?
-                <div>
-                  <span className="flex flex-col justify-center items-center mt-5 text-base font-semibold text-gray-400">No more posts to show.</span>
-                </div> :
-                  <Loading /> 
+              {noMorePosts &&
+                <Loading />
               }
             </>
             }

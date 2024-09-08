@@ -3,11 +3,7 @@
 import { useSession } from "next-auth/react";
 import { redirect } from "next/navigation";
 import { useEffect, useState } from "react";
-import ListingsMenu from "./ListingsMenu"
 import ListingCard from "./ListingCard";
-import CreateListing from "./CreateListing";
-import { set } from "mongoose";
-import { FaSpinner } from "react-icons/fa";
 import Loading from "./Loading";
 
 const MyListings = () => {
@@ -84,25 +80,21 @@ const MyListings = () => {
   }
 
   return (
-    <div className="w-full min-h-screen flex flex-col pt-16">
+    <div className="w-full min-h-screen flex flex-col mt-20">
       {/* Here goes the text */}
-      <div className="w-full text-4xl font-bold mb-4 flex justify-center">
+      <div className="w-full text-md font-semibold text-gray-500 flex justify-center mt-1">
         My Listings
       </div>
 
-      <div className="w-full h-full flex space-x-5">
-
-        {/* For the middle page */}
-        <div className="w-full h-full">
-        {listings && listings
-          .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)) // Sort listings by date (latest first)
-          .map(p => (
-            <ListingCard p={p} curUser={user} allListingsFetched={allListingsFetched}/>    // Mh to peirakseis // key={p._id} //
-          ))}
+      <div className="w-full h-full flex justify-center items-center">
+        <div className="w-1/3 h-full">
+          {listings && listings
+            .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)) // Sort listings by date (latest first)
+            .map(p => (
+              <ListingCard p={p} curUser={user} allListingsFetched={allListingsFetched}/>    // Mh to peirakseis // key={p._id} //
+            ))}
         </div>
-
       </div>
-      
     </div>
   )
 }

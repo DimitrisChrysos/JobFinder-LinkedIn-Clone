@@ -6,23 +6,31 @@ import Listing from "@models/listing";
 export async function POST(req) {
     try {
         const {userId, job_pos, description, path} = await req.json();
+        console.log("userId here:", userId, "job_pos here:", job_pos, "description here:", description, "path here:", path);
 
         await connectMongoDB(); // Connect to MongoDB
-
-        if (!path)
-            await Listing.create({ userId, job_pos, description, path: "no-file" });
+        let listing;
+        console.log("xm???!")
+        if (!path) {
+            if (description == "" && job_pos != "")
+                listing = await Listing.create({ userId, job_pos, description: "no-text", path: "no-file" });
+            else if (description != "" && job_pos == "")
+                listing = await Listing.create({ userId, job_pos: "no-text", description, path: "no-file" });
+            else
+                listing = await Listing.create({ userId, job_pos, description, path: "no-file" });
+        }
         else if (description == "" && job_pos != "")
-            await Listing.create({ userId, job_pos, description: "no-text", path });
+            listing = await Listing.create({ userId, job_pos, description: "no-text", path });
         else if (description != "" && job_pos == "")
-            await Listing.create({ userId, job_pos: "no-text", description, path });
+            listing = await Listing.create({ userId, job_pos: "no-text", description, path });
         else if (description == "" && job_pos == "")
-            await Listing.create({ userId, job_pos: "no-text", description: "no-text", path });
+            listing = await Listing.create({ userId, job_pos: "no-text", description: "no-text", path });
         else
-            await Listing.create({ userId, job_pos, description, path }); // Create the listing
+            listing = await Listing.create({ userId, job_pos, description, path }); // Create the listing
         
-        return NextResponse.json({message: "Listing Created."}, {status: 201}); // Return a success message
+        return NextResponse.json({message: "Listing Created.", listing}, {status: 201}); // Return a success message
     } catch (error) {
-        return NextResponse.json({message: "An error occurred while creating the listing."}, {status: 500});    // Return an error message
+        return NextResponse.json({message: "An error occurred while creating the listing." + error}, {status: 500});    // Return an error message
     }
 }
 

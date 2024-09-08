@@ -111,7 +111,10 @@ const createMatrixR = async (n, m, users, listings) => {
                 // Get the views of the listing and add them to the matrix
                 const views = await getViews(listing._id);
                 if (usersConnected) {
-                    matrix[i][j] = 2*views;
+                    if (views === 0)
+                        matrix[i][j] = 1;
+                    else
+                        matrix[i][j] = 2*views;
                 } else {
                     matrix[i][j] = views;
                 }

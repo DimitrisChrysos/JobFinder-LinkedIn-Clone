@@ -9,17 +9,13 @@ import CreateListing from "./CreateListing";
 import { FaSpinner } from "react-icons/fa";
 import Loading from "./Loading";
 import { selectListings } from "@utils/selectListings";
-import { set } from "mongoose";
 
 const ListingsPage = () => {
 
   const { data: session } = useSession();
   const [user, setUser] = useState(null);
-  const [listings, setListings] = useState([-1]);
+  const [listings, setListings] = useState([]);
   const [error, setError] = useState(null);
-  const [allListingsFetched, setAllListingsFetched] = useState(false);
-  const [current_listing_counter, setCurrentListingCounter] = useState(0);
-
   const listingsPerIteration = 5;
   const [seenListingIndexStart, setSeenListingIndexStart] = useState(0);
   const [seenListingIndexEnd, setSeenListingIndexEnd] = useState(listingsPerIteration);
@@ -81,7 +77,9 @@ const ListingsPage = () => {
 
   // Add views to the listings
   const addViews = async () => {
+    console.log("curListingIteration here:", curListingIteration);
     const listingIds = curListingIteration.map(l => l._id);
+    console.log("listingIds here:", listingIds);
     const res = await fetch('/api/listing/views', {
       method: 'PUT',
       headers: {
@@ -146,15 +144,12 @@ const ListingsPage = () => {
 
         {/* For the middle page */}
         <div className="w-full h-full mb-10">
-        {(listings && listings.length && curListingIteration.length) ? listings.map(p => (
+        {(listings && listings.length ) ? listings.map(p => (
             <ListingCard p={p} curUser={user}/>
           )) :
           <>
-            {noMoreListings ?
-              <div>
-                <span className="flex flex-col justify-center items-center mt-5 text-base font-semibold text-gray-400">No more listings to show.</span>
-              </div> :
-                <Loading /> 
+            {!noMoreListings &&
+              <Loading />
             }
           </>
           }
@@ -172,7 +167,7 @@ const ListingsPage = () => {
 
         {/* For the right page */}
         <div className="mt-5 w-3/5">
-          <CreateListing user={user} current_listing_counter={current_listing_counter} setCurrentListingCounter={setCurrentListingCounter} />
+          <CreateListing user={user} listings={listings} setListings={setListings} />
         </div>
       </div>
     </div>
