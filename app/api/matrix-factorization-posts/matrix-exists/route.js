@@ -1,6 +1,6 @@
 import connectMongoDB from "@lib/mongodb";
 import { NextResponse } from "next/server";
-import Matrix from "@models/matrix";
+import MatrixPosts from "@models/matrixPosts";
 
 // Check if a matrix exists and return it, if it does not 
 // exist, return an appropriate message 
@@ -8,7 +8,7 @@ export async function GET(req) {
     try {
         await connectMongoDB(); // Connect to MongoDB
         
-        const existingMatrix = await Matrix.findOne();
+        const existingMatrix = await MatrixPosts.findOne();
         if (existingMatrix) {
             return NextResponse.json({
                 message: "Matrix exists",

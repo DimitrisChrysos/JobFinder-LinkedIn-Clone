@@ -1,6 +1,6 @@
 import connectMongoDB from "@lib/mongodb";
 import { NextResponse } from "next/server";
-import Matrix from "@models/matrix";
+import MatrixPosts from "@models/matrixPosts";
 
 export async function POST(req) {
     try {
@@ -8,13 +8,13 @@ export async function POST(req) {
         await connectMongoDB(); // Connect to MongoDB
 
         // Check if a matrix exists and delete to post a new one
-        const existingMatrix = await Matrix.findOne();
+        const existingMatrix = await MatrixPosts.findOne();
         if (existingMatrix) {
-            await Matrix.deleteMany({});
+            await MatrixPosts.deleteMany({});
         }
 
         // Create a new matrix
-        await Matrix.create({ data: matrix });
+        await MatrixPosts.create({ data: matrix });
 
         return NextResponse.json({
             message: "Matrix saved successfully",

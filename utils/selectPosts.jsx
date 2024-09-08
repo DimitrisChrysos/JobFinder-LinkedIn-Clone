@@ -1,8 +1,8 @@
-import { getMatrix } from "./getMatrix";
+import { getMatrixPosts } from "./getMatrixPosts";
 
 export async function selectPosts(userId, seenPostIndexStart, seenPostIndexEnd) {
   try {
-    const matrix = await getMatrix();
+    const matrix = await getMatrixPosts();
     if (matrix) {
       console.log("matrix here:", matrix);
       

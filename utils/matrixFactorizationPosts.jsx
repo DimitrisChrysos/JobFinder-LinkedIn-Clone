@@ -268,7 +268,7 @@ const matrixFactorization = async (R, P, Q, K, alpha, beta, steps) => {
 // Post the matrix to the databse
 const postMatrix = async (matrix) => {
     try {
-        const url = new URL('/api/matrix-factorization/save-array', baseUrl);
+        const url = new URL('/api/matrix-factorization-posts/save-array', baseUrl);
         const res = await fetch(url.toString(), {
             method: 'POST',
             headers: {
@@ -357,7 +357,7 @@ const startMatrixFactorization = async () => {
 };
 
 // Function to run MatrixFactorization every 30 minutes
-async function runMatrixFactorizationPeriodically() {
+async function runMatrixFactorizationPostsPeriodically() {
     
     console.log("Running the Matrix Factorization, this process repeats every 30 minutes\n")
     await startMatrixFactorization(); // Run immediately on start
@@ -367,5 +367,5 @@ async function runMatrixFactorizationPeriodically() {
 }
 
 module.exports = {
-    runMatrixFactorizationPeriodically
+    runMatrixFactorizationPostsPeriodically
 };
