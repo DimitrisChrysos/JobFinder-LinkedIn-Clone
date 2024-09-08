@@ -2,7 +2,7 @@ import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState, useRef } from "react";
-import { HiOutlineDocumentDuplicate } from "react-icons/hi";
+import { HiOutlineBriefcase, HiOutlineDocumentDuplicate, HiOutlineDocumentText } from "react-icons/hi";
 
 const ListingCard = ({p, curUser}) => {
 
@@ -109,26 +109,43 @@ const ListingCard = ({p, curUser}) => {
                     <span className="font-bold">{user?.name} {user?.surname}</span>
                 </div>
             </div>
-            
+
             {p.job_pos != "no-text" && (
-            <>
-                <div className="mx-2">
-                    <div className="text-lg font-bold p-2 break-words" >
-                        {p.job_pos}
+                <div className="space-y-5 my-5">
+                    <div className="flex items-center justify-center text-lg">
+                        <span className="text-blue-400 pr-2">
+                            <HiOutlineBriefcase className="inline-block w-6 h-6" />
+                        </span>
+                        <span className="text-xl text-gray-700">Job Position: {p.job_pos}</span>
                     </div>
                 </div>
-            </>
+            )}
+            
+            {(p.job_pos != "no-text" && p.description != "no-text") && (
+                <hr className="my-4 border-t border-gray-300 w-2/5 mx-auto" />
             )}
 
             {p.description != "no-text" && (
-            <>
-                <div className="mx-2">
-                    <div className="text-sm p-2 break-words" >
-                        {p.description}
+                <div className="space-y-5 my-5">
+                    
+                    <div className="flex items-center justify-center text-lg">
+                        <span className="text-green-400 pr-2">
+                            <HiOutlineDocumentText className="inline-block w-7 h-7" />
+                        </span>
+                        <span className="text-2xl text-gray-600">Description</span>
                     </div>
+
+                    <div className="mx-2 px-2 items-center justify-center text-center">
+                        <div className="text-sm break-words gap-1">
+                            <span className="text-sm text-gray-700">{p.description}</span>
+                        </div>
+                    </div>
+
+                    {/* <hr className="my-4 border-t border-gray-300 w-2/5 mx-auto" /> */}
                 </div>
-            </>
             )}
+
+
 
             {p.path !== "no-file" && (
             (() => {
@@ -183,19 +200,16 @@ const ListingCard = ({p, curUser}) => {
             })()
             )}
 
-            
-            {/* Applications */}
-            <div className="flex items-center justify-center mx-4 text-lg p-2">
-                <button
-                    className="bg-blue-400 text-white border border-blue-400 px-2 py-1 text-sm rounded hover:bg-white hover:text-blue-400 transition-colors duration-150"
+            <div className="flex items-center space-x-1 mx-4 text-base justify-end">
+                <div 
+                    className="flex text-gray-600 items-center justify-center gap-1 cursor-pointer hover:text-gray-900 transition-colors duration-150"
                     onClick={handleOpenCloseApplication}
                 >
-                    <span className="flex items-center justify-center gap-2">
-                        Applications
-                        <HiOutlineDocumentDuplicate />
-                    </span>
-                </button>
+                    <HiOutlineDocumentDuplicate className="my-4"/>
+                    <span>Applications</span>
+                </div>
             </div>
+
 
             {/* Applications */}
             { openApplications && (

@@ -80,7 +80,7 @@ const MyListings = () => {
   }
 
   return (
-    <div className="w-full min-h-screen flex flex-col mt-20">
+    <div className="w-full min-h-screen flex flex-col mt-20 mb-5">
       {/* Here goes the text */}
       <div className="w-full text-md font-semibold text-gray-500 flex justify-center mt-1">
         My Listings
