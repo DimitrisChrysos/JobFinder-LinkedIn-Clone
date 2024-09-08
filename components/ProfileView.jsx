@@ -461,9 +461,17 @@ const ProfileView = ({ userId }) => {
                     .map(p => (
                         <PostCard p={p} curUser={curUser}/>    // Mh to peirakseis // key={p._id} //
                     )) : (
-                        <div className="flex flex-col justify-center items-center mt-10 space-y-4">
-                            <span className="text-lg text-gray-500">You have not made any posts yet.</span>
-                        </div>
+                        <>
+                            { user._id == curUser._id ? (
+                                <div className="flex flex-col justify-center items-center mt-10 space-y-4">
+                                    <span className="text-lg text-gray-500">You have not made any posts yet.</span>
+                                </div>
+                            ) : (
+                                <div className="flex flex-col justify-center items-center mt-10 space-y-4">
+                                    <span className="text-lg text-gray-500">{user.name} has not made any posts yet.</span>
+                                </div>
+                            ) }
+                        </>
                     )}
                 </div>
             </div>

@@ -207,9 +207,9 @@ const createMatrixR = async (n, m, users, posts) => {
                     // Fill the matrix with the ratings
                     if (usersConnected) {
                         if (likes + comments >= 1) {
-                            matrix[i][j] = 2*(likes + comments);
+                            matrix[i][j] = 5*(likes + comments);
                         } else {
-                            matrix[i][j] = 2;
+                            matrix[i][j] = 5;
                         }
                     }
                     matrix[i][j] += likes + comments + timePoints;
