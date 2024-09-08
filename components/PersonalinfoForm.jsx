@@ -191,7 +191,7 @@ const PersonalInfoForm = ({ user }) => {
                 <div className="flex flex-col">
                     <label htmlFor="skills" className="font-semibold mb-1">Skills</label>
                     <div className="flex items-center gap-2">
-                      <input onChange={e => setNewSkills(e.target.value)} value={newSkills} type="text" placeholder="eg: Hard-wroking, Leadership, Team-Work" />
+                      <input onChange={e => setNewSkills(e.target.value)} value={newSkills} type="text" placeholder="eg: Hard-Working, Leadership, Team-Work" />
                       <div className="mx-auto flex items-center justify-center">
                         <input 
                           type="checkbox" 
