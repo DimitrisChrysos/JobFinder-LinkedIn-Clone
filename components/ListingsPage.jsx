@@ -6,9 +6,10 @@ import { useEffect, useState } from "react";
 import ListingsMenu from "./ListingsMenu"
 import ListingCard from "./ListingCard";
 import CreateListing from "./CreateListing";
-import { set } from "mongoose";
 import { FaSpinner } from "react-icons/fa";
 import Loading from "./Loading";
+import { selectListings } from "@utils/selectListings";
+import { set } from "mongoose";
 
 const ListingsPage = () => {
 
@@ -18,6 +19,13 @@ const ListingsPage = () => {
   const [error, setError] = useState(null);
   const [allListingsFetched, setAllListingsFetched] = useState(false);
   const [current_listing_counter, setCurrentListingCounter] = useState(0);
+
+  const listingsPerIteration = 5;
+  const [seenListingIndexStart, setSeenListingIndexStart] = useState(0);
+  const [seenListingIndexEnd, setSeenListingIndexEnd] = useState(listingsPerIteration);
+  const [isFetching, setIsFetching] = useState(false);
+  const [noMoreListings, setNoMoreListings] = useState(false);
+  const [curListingIteration, setCurListingIteration] = useState([]);
   
   // Redirect to admin page if the user is an admin
   if (session?.user.admin)
@@ -40,73 +48,93 @@ const ListingsPage = () => {
       }
     };
 
-    // Fetch all the listings from the current user, the user's connections and the listings
-    // the connections have liked or commented on
+    // Fetch initial listings
     const getListings = async () => {
-      try {
-          let tempListings = [];
-
-          // Get the user's listings
-          const res = await fetch(`/api/listing?id=${session?.user.id}`);
-          if (!res.ok) {
-              throw new Error('Failed to fetch listings');
-          }
-          const data = await res.json();
-          tempListings = data.listings;
-
-          // Get the user's connections
-          const res1 = await fetch(`/api/connections/get-all-connections/${session?.user.id}`);
-          if (!res1.ok) {
-              throw new Error('Failed to fetch connections');
-          }
-          const data1 = await res1.json();
-
-          // Get all the listings from every connection of the user
-          for (const con of data1.data) {
-            const res2 = await fetch(`/api/listing?id=${con._id}`);
-            if (!res2.ok) {
-                throw new Error('Failed to fetch listings');
-            }
-            const data2 = await res2.json();
-            const connectionListings = data2.listings;
-
-            // Update the tempListings with the new listings if they don't already exist
-            const existingListingIds = new Set(tempListings.map(listing => listing._id));
-            const newListings = connectionListings.filter(listing => !existingListingIds.has(listing._id));
-            tempListings = [...tempListings, ...newListings];
-          }
-
-          // Set the listings state once at the end and remove potential duplicates
-          const uniqueListings = Array.from(new Map(tempListings.map(listing => [listing._id, listing])).values());
-          setListings(uniqueListings);
-      } catch (error) {
-          console.error('Error fetching listings:', error);
+      const listings = await selectListings(session?.user.id, seenListingIndexStart, seenListingIndexEnd);
+      if (listings.length === 0) {
+        setNoMoreListings(true);
+        return;
       }
-  };
+      setListings(listings);
+      setCurListingIteration(listings);
+    };
     
     if (session?.user.id) {
       fetchProfile();
       getListings();
     }
-  }, [session?.user.id, current_listing_counter]);   // Dependency array with userId to re-run if userId changes
+  }, [session?.user.id]);
   
+  // Infinite scroll logic
   useEffect(() => {
-    if (listings.length !== 1 || listings[0] !== -1) {
-        console.log("allListingsFetched: ", allListingsFetched);
-        setAllListingsFetched(true);
-    }
-  }, [listings]);
-  
-  
+    const handleScroll = debounce(() => {
+      if (noMoreListings || isFetching) return;
 
-  if (!allListingsFetched || !user) {
+      if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 100) {
+        loadMoreListings();
+      }
+    }, 200);
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [isFetching, noMoreListings, seenListingIndexEnd, session?.user.id, curListingIteration]);
+
+  // Add views to the listings
+  const addViews = async () => {
+    const listingIds = curListingIteration.map(l => l._id);
+    const res = await fetch('/api/listing/views', {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ listingIds }),
+    });
+    if (!res.ok) {
+      throw new Error('Failed to add a view to each listing');
+    }
+  }
+
+  // Load more listings
+  const loadMoreListings = async () => {
+
+    setIsFetching(true);
+    const newSeenListingIndexStart = seenListingIndexEnd;
+    const newSeenListingIndexEnd = seenListingIndexEnd + listingsPerIteration;
+
+    const newListings = await selectListings(session?.user.id, newSeenListingIndexStart, newSeenListingIndexEnd);
+    console.log("newListings here:", newListings);
+    if (newListings.length === 0) {
+      await addViews();
+      setNoMoreListings(true);
+    } else {
+      setListings(prevListings => [...prevListings, ...newListings]);
+      await addViews();
+      setCurListingIteration(newListings);
+      setSeenListingIndexStart(newSeenListingIndexStart);
+      setSeenListingIndexEnd(newSeenListingIndexEnd);
+    }
+    setIsFetching(false);
+  };
+
+  // Debounce function to prevent too many scroll events
+  const debounce = (func, delay) => {
+    let timer;
+    return (...args) => {
+      clearTimeout(timer);
+      timer = setTimeout(() => {
+        func(...args);
+      }, delay);
+    };
+  };
+
+  if (!user) {
     return (
       <Loading />
     );
   }
 
   return (
-    <div className="w-full min-h-screen flex flex-col pt-16">
+    <div className="w-full min-h-screen flex flex-col pt-16 mt-5">
 
       {/* For the three split pages */}
       <div className="w-full h-full flex space-x-5">
@@ -117,21 +145,36 @@ const ListingsPage = () => {
         </div>
 
         {/* For the middle page */}
-        <div className="w-full h-full">
-        {listings && listings
-          .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)) // Sort listings by date (latest first)
-          .map(p => (
-            <ListingCard p={p} curUser={user} allListingsFetched={allListingsFetched}/>    // Mh to peirakseis // key={p._id} //
-          ))}
+        <div className="w-full h-full mb-10">
+        {(listings && listings.length && curListingIteration.length) ? listings.map(p => (
+            <ListingCard p={p} curUser={user}/>
+          )) :
+          <>
+            {noMoreListings ?
+              <div>
+                <span className="flex flex-col justify-center items-center mt-5 text-base font-semibold text-gray-400">No more listings to show.</span>
+              </div> :
+                <Loading /> 
+            }
+          </>
+          }
+          {isFetching && 
+            <div className="flex flex-col justify-center items-center mt-10">
+              <FaSpinner className="animate-spin text-4xl text-blue-400" />
+              <span className="text-lg font-semibold text-gray-700">Loading Listings...</span>
+            </div>}
+          {noMoreListings &&
+            <div>
+              <span className="flex flex-col justify-center items-center mt-5 text-base font-semibold text-gray-400">No more listings to show.</span>
+            </div>
+          }
         </div>
 
         {/* For the right page */}
         <div className="mt-5 w-3/5">
           <CreateListing user={user} current_listing_counter={current_listing_counter} setCurrentListingCounter={setCurrentListingCounter} />
         </div>
-
       </div>
-      
     </div>
   )
 }

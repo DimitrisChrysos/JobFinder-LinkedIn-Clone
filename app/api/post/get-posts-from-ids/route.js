@@ -2,7 +2,7 @@ import connectMongoDB from "@lib/mongodb";
 import { NextResponse } from "next/server";
 import Post from "@models/post";
 
-// This function returns all the posts in the database and is called when a GET request is made to /api/post/get-all-posts
+// This function returns all the posts from the given ids
 export async function POST(req) {
     try {
         const { ids } = await req.json();

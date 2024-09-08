@@ -4,6 +4,7 @@ const path = require('path');
 const express = require('express');
 const next = require('next');
 const { runMatrixFactorizationPeriodically } = require('./utils/matrixFactorization.jsx');
+const { runMatrixFactorizationListingsPeriodically } = require('./utils/matrixFactorizationListings.jsx');
 
 const dev = process.env.NODE_ENV !== 'production';
 const app = next({ dev });
@@ -29,7 +30,8 @@ app.prepare().then(() => {
     
     // Run the managePostsPeriodically function every 30 minutes
     runMatrixFactorizationPeriodically();
-  });
 
-  
+    // Run the manageListingsPeriodically function every 30 minutes
+    runMatrixFactorizationListingsPeriodically();
+  });
 });

@@ -17,7 +17,6 @@ const HomePage = () => {
   const [user, setUser] = useState(null);
   const [posts, setPosts] = useState([]);
   const [error, setError] = useState(null);
-  // const [currentPostCounter, setCurrentPostCounter] = useState(0);
   const postsPerIteration = 5;
   const [seenPostIndexStart, setSeenPostIndexStart] = useState(0);
   const [seenPostIndexEnd, setSeenPostIndexEnd] = useState(postsPerIteration);
@@ -89,7 +88,7 @@ const HomePage = () => {
       body: JSON.stringify({ postIds }),
     });
     if (!res.ok) {
-      throw new Error('Failed to add a view to each posts');
+      throw new Error('Failed to add a view to each post');
     }
   }
 

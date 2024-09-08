@@ -29,7 +29,11 @@ const listingSchema = new Schema({
         type: String,
         required: true
     },
-    application: [applicationSchema]
+    application: [applicationSchema],
+    views: {
+        type: Number,
+        default: 0
+    }
 }, {timestamps: true});
 
 const Listing = models.Listing || mongoose.model("Listing", listingSchema);
