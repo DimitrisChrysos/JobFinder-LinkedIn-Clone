@@ -296,7 +296,7 @@ const ProfileView = ({ userId }) => {
     
   return (
 
-    <div className="w-full min-h-screen flex flex-col pt-16">
+    <div className="w-full min-h-screen flex flex-col mt-20">
         <div className="w-full h-full flex space-x-5">
 
             {/* For the left page */}
@@ -454,13 +454,17 @@ const ProfileView = ({ userId }) => {
             </div>
 
             {/* For the right page */}
-            <div className="mt-5 w-3/5">
+            <div className="w-3/5">
                 <div className="w-full h-full">
-                    {posts && posts
+                    {posts.length ? posts
                     .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)) // Sort posts by date (latest first)
                     .map(p => (
                         <PostCard p={p} curUser={curUser}/>    // Mh to peirakseis // key={p._id} //
-                    ))}
+                    )) : (
+                        <div className="flex flex-col justify-center items-center mt-10 space-y-4">
+                            <span className="text-lg text-gray-500">You have not made any posts yet.</span>
+                        </div>
+                    )}
                 </div>
             </div>
 
