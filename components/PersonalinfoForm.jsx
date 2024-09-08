@@ -131,7 +131,7 @@ const PersonalInfoForm = ({ user }) => {
                 <div className="flex flex-col">
                     <label htmlFor="jobPosition" className="font-semibold mb-1">Job Position</label>
                     <div className="flex items-center gap-2">
-                      <input onChange={e => setNewJobPos(e.target.value)} value={newJobPos} type="text" placeholder={user?.job_position} />
+                      <input onChange={e => setNewJobPos(e.target.value)} value={newJobPos} type="text" placeholder="eg: Engineer" />
                       <div className="mx-auto flex items-center justify-center">
                         <input 
                           type="checkbox" 
@@ -146,7 +146,7 @@ const PersonalInfoForm = ({ user }) => {
                 <div className="flex flex-col">
                     <label htmlFor="employmentAgency" className="font-semibold mb-1">Employment Agency</label>
                     <div className="flex items-center gap-2">
-                      <input onChange={e => setNewEmploymentAgency(e.target.value)} value={newEmploymentAgency} type="text" placeholder={user?.employment_agency} />
+                      <input onChange={e => setNewEmploymentAgency(e.target.value)} value={newEmploymentAgency} type="text" placeholder="eg: Google" />
                       <div className="mx-auto flex items-center justify-center">
                         <input 
                           type="checkbox" 
@@ -161,7 +161,7 @@ const PersonalInfoForm = ({ user }) => {
                 <div className="flex flex-col">
                     <label htmlFor="experience" className="font-semibold mb-1">Experience</label>
                     <div className="flex items-center gap-2">
-                      <input onChange={e => setNewExperience(e.target.value)} value={newExperience} type="text" placeholder={user?.experience} />
+                      <input onChange={e => setNewExperience(e.target.value)} value={newExperience} type="text" placeholder="eg: 4 years" />
                       <div className="mx-auto flex items-center justify-center">
                         <input 
                           type="checkbox" 
@@ -176,7 +176,7 @@ const PersonalInfoForm = ({ user }) => {
                 <div className="flex flex-col">
                     <label htmlFor="education" className="font-semibold mb-1">Education</label>
                     <div className="flex items-center gap-2">
-                      <input onChange={e => setNewEducation(e.target.value)} value={newEducation} type="text" placeholder={user?.education} />
+                      <input onChange={e => setNewEducation(e.target.value)} value={newEducation} type="text" placeholder="eg: University" />
                       <div className="mx-auto flex items-center justify-center">
                         <input 
                           type="checkbox" 
@@ -191,7 +191,7 @@ const PersonalInfoForm = ({ user }) => {
                 <div className="flex flex-col">
                     <label htmlFor="skills" className="font-semibold mb-1">Skills</label>
                     <div className="flex items-center gap-2">
-                      <input onChange={e => setNewSkills(e.target.value)} value={newSkills} type="text" placeholder={user?.skills} />
+                      <input onChange={e => setNewSkills(e.target.value)} value={newSkills} type="text" placeholder="eg: Hard-wroking, Leadership, Team-Work" />
                       <div className="mx-auto flex items-center justify-center">
                         <input 
                           type="checkbox" 
