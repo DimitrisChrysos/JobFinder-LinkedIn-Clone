@@ -147,14 +147,13 @@ const ListingsPage = () => {
         {(listings && listings.length ) ? listings.map(p => (
             <ListingCard p={p} curUser={user}/>
           )) :
-          <>
-            {!noMoreListings &&
-              <Loading />
-            }
-          </>
+            <div className="flex flex-col justify-center items-center mt-10 space-y-4">
+                <FaSpinner className="animate-spin text-4xl text-blue-400" />
+                <span className="text-lg font-semibold text-gray-700">Loading Listings...</span>
+            </div>
           }
           {isFetching && 
-            <div className="flex flex-col justify-center items-center mt-10">
+            <div className="flex flex-col justify-center items-center mt-10 space-y-4">
               <FaSpinner className="animate-spin text-4xl text-blue-400" />
               <span className="text-lg font-semibold text-gray-700">Loading Listings...</span>
             </div>}

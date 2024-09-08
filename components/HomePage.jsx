@@ -152,14 +152,13 @@ const HomePage = () => {
           {(posts && posts.length && curPostIteration.length) ? posts.map(p => (
               <PostCard p={p} curUser={user}/>
             )) :
-            <>
-              {noMorePosts &&
-                <Loading />
-              }
-            </>
+              <div className="flex flex-col justify-center items-center mt-10 space-y-4">
+                  <FaSpinner className="animate-spin text-4xl text-blue-400" />
+                  <span className="text-lg font-semibold text-gray-700">Loading Posts...</span>
+              </div>
             }
             {isFetching && 
-              <div className="flex flex-col justify-center items-center mt-10">
+              <div className="flex flex-col justify-center items-center mt-10 space-y-4">
                 <FaSpinner className="animate-spin text-4xl text-blue-400" />
                 <span className="text-lg font-semibold text-gray-700">Loading Posts...</span>
               </div>}
