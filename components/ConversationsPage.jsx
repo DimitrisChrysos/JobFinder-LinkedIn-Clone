@@ -189,11 +189,13 @@ const ConversationsPage = ({ user }) => {
       if (res.ok) {
         const data = await res.json();
         setMessages(data.data[0].message);
-        setText('');
         updateUsersLastChat(curChat._id)
-        textareaRef.current.style.height = 'auto'; // Reset the height
-        textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`; // Set the height based on the scroll height
-        
+        setText('');
+
+        // Reset the textarea height to its original size
+        if (textareaRef.current) {
+          textareaRef.current.style.height = 'auto'; // Reset to original height
+        }
         
       } else {
         console.log('Failed to send message');
@@ -253,38 +255,39 @@ const ConversationsPage = ({ user }) => {
             </>
           )}
 
+          {/* Messages Container */}
           {messages.length === 0 ? (
             <div className="text-center text-gray-500">
               No messages to display.
             </div>
           ) : (
             messages.map((msg) => (
-              <div key={msg._id} className="w-full flex my-2">
+              <div key={msg._id} className={`w-full flex my-2 ${msg.senderId._id === session?.user.id ? 'justify-end' : 'justify-start'}`}>
                 {msg.senderId._id === session?.user.id ? (
-                  <div className="ml-auto flex items-center gap-2">
-                    <span>{msg.content}</span>
-                    <div className="relative w-10 h-10 rounded-full overflow-hidden border-2 border-gray-300 p-1">
+                  <div className="flex items-center gap-2">
+                    <span className="text-right break-words bg-blue-200 px-4 py-2 rounded-lg max-w-3/4 whitespace-pre-wrap">{msg.content}</span>
+                    <div className="relative w-10 h-10 min-w-[40px] min-h-[40px] rounded-full overflow-hidden border-2 border-gray-300 p-1">
                       <Image 
                         src={msg.senderId.path}
-                        alt='avatar' 
+                        alt="avatar"
                         layout="fill"
                         objectFit="cover"
-                        className='absolute inset-0 w-full h-full'  
+                        className="absolute inset-0 w-full h-full"  
                       />
                     </div>
                   </div>
                 ) : (
-                  <div className="mr-auto flex items-center gap-2">
-                    <div className="relative w-10 h-10 rounded-full overflow-hidden border-2 border-gray-300 p-1">
+                  <div className="flex items-center gap-2">
+                    <div className="text-left relative w-10 h-10 min-w-[40px] min-h-[40px] rounded-full overflow-hidden border-2 border-gray-300 p-1">
                       <Image 
                         src={msg.senderId.path}
-                        alt='avatar' 
+                        alt="avatar"
                         layout="fill"
                         objectFit="cover"
-                        className='absolute inset-0 w-full h-full'  
+                        className="absolute inset-0 w-full h-full"  
                       />
                     </div>
-                    <span>{msg.content}</span>
+                    <span className="break-words bg-gray-200 px-4 py-2 rounded-lg max-w-3/4 whitespace-pre-wrap">{msg.content}</span>
                   </div>
                 )}
               </div>
@@ -294,11 +297,11 @@ const ConversationsPage = ({ user }) => {
           <div ref={messagesEndRef} />
         </div>
 
-        {/* Fixed send message form at the bottom */}
+        {/* Fixed send message form at the bottom of the page*/}
         {curChat && (
           <form 
             onSubmit={handleSendMessage} 
-            className="flex items-center gap-2 p-5 shadow-lg space-x-2 rounded-lg border-t-4 border-blue-400 bg-white sticky bottom-6"
+            className="flex items-center mx-auto w-10/12 gap-2 p-5 shadow-2xl space-x-2 rounded-lg border-t-4 border-blue-400 bg-white sticky bottom-6"
           >
             <textarea
                 ref={textareaRef}
