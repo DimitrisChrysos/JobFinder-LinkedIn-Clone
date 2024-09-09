@@ -1,14 +1,15 @@
-// const mongoose = require('mongoose');
-// const { faker } = require('@faker-js/faker');
-// const User = require('./models/user');
-// const connectMongoDB = require('./lib/mongodb');
-
 import mongoose from 'mongoose';
 import { faker } from '@faker-js/faker';
-import User from './models/user.js';
-import connectMongoDB from './lib/mongodb.js';
+import User from './models/user.mjs';
+import connectMongoDB from './lib/mongodb.mjs';
 import dotenv from 'dotenv';
 dotenv.config();
+
+// const mongoose = require('mongoose');
+// const { faker } = require('@faker-js/faker');
+// const User = require('./models/user.js');
+// const connectMongoDB = require('./lib/mongodb.js');
+// require('dotenv').config();
 
 
 // To add more complex users in the database
