@@ -370,64 +370,66 @@ const ProfileView = ({ userId }) => {
                                             <HiOutlineChat size={26}/>
                                             <span className="hidden lg:block">Start Chat</span>
                                     </button>
-                                    { !connectionExists ? (
-                                        <>
-                                            { reqExists==="request does not exist" ? (
-                                                <button 
-                                                    className="flex flex-col items-center text-blue-400 transition-transform duration-300 ease-in-out transform hover:scale-110 hover:text-blue-400"
-                                                    onClick={handleAddCancelConnection}
-                                                    disabled={isButtonDisabled}
-                                                >
-                                                    <HiOutlineUserAdd size={26}/>
-                                                    <span className="hidden lg:block">Add Connection</span>
-                                                </button>
-                                            ) : reqExists==="request exists with switched roles" ? (
-                                                <>
+                                    { !user.admin && (
+                                        <>{ !connectionExists ? (
+                                            <>
+                                                { reqExists==="request does not exist" ? (
                                                     <button 
                                                         className="flex flex-col items-center text-blue-400 transition-transform duration-300 ease-in-out transform hover:scale-110 hover:text-blue-400"
-                                                        onClick={() => handleAcceptConnection(user._id)}
+                                                        onClick={handleAddCancelConnection}
                                                         disabled={isButtonDisabled}
                                                     >
-                                                        <HiOutlineCheck size={26}/>
-                                                        <span className="hidden lg:block">Accept Request</span>
+                                                        <HiOutlineUserAdd size={26}/>
+                                                        <span className="hidden lg:block">Add Connection</span>
                                                     </button>
+                                                ) : reqExists==="request exists with switched roles" ? (
+                                                    <>
+                                                        <button 
+                                                            className="flex flex-col items-center text-blue-400 transition-transform duration-300 ease-in-out transform hover:scale-110 hover:text-blue-400"
+                                                            onClick={() => handleAcceptConnection(user._id)}
+                                                            disabled={isButtonDisabled}
+                                                        >
+                                                            <HiOutlineCheck size={26}/>
+                                                            <span className="hidden lg:block">Accept Request</span>
+                                                        </button>
+                                                        <button 
+                                                            className="flex flex-col items-center text-red-500 transition-transform duration-300 ease-in-out transform hover:scale-110 hover:text-red-500"
+                                                            onClick={() => handleRejectConnection(user._id)}
+                                                            disabled={isButtonDisabled}
+                                                        >
+                                                            <HiX size={26}/>
+                                                            <span className="hidden lg:block">Reject Request</span>
+                                                        </button>
+                                                    </>
+                                                ) : (
                                                     <button 
                                                         className="flex flex-col items-center text-red-500 transition-transform duration-300 ease-in-out transform hover:scale-110 hover:text-red-500"
-                                                        onClick={() => handleRejectConnection(user._id)}
+                                                        onClick={handleAddCancelConnection}
                                                         disabled={isButtonDisabled}
                                                     >
-                                                        <HiX size={26}/>
-                                                        <span className="hidden lg:block">Reject Request</span>
+                                                        <HiOutlineBan size={26}/>
+                                                        <span className="hidden lg:block">Cancel Request</span>
                                                     </button>
-                                                </>
-                                            ) : (
+                                                )}
+                                            </>
+                                        ) : (
+                                            <>
+                                                <Link href={`/network/${user._id}`}>
+                                                    <button className="flex flex-col items-center text-blue-400 transition-transform duration-300 ease-in-out transform hover:scale-110 hover:text-blue-400">
+                                                        <HiOutlineUserGroup size={26}/>
+                                                        <span className="hidden lg:block">Network</span>
+                                                    </button>
+                                                </Link>
                                                 <button 
                                                     className="flex flex-col items-center text-red-500 transition-transform duration-300 ease-in-out transform hover:scale-110 hover:text-red-500"
-                                                    onClick={handleAddCancelConnection}
+                                                    onClick={() => handleRemoveConnection(user._id)}
                                                     disabled={isButtonDisabled}
                                                 >
-                                                    <HiOutlineBan size={26}/>
-                                                    <span className="hidden lg:block">Cancel Request</span>
+                                                    <HiOutlineUserRemove size={26}/>
+                                                    <span className="hidden lg:block">Remove Connection</span>
                                                 </button>
-                                            )}
-                                        </>
-                                    ) : (
-                                        <>
-                                            <Link href={`/network/${user._id}`}>
-                                                <button className="flex flex-col items-center text-blue-400 transition-transform duration-300 ease-in-out transform hover:scale-110 hover:text-blue-400">
-                                                    <HiOutlineUserGroup size={26}/>
-                                                    <span className="hidden lg:block">Network</span>
-                                                </button>
-                                            </Link>
-                                            <button 
-                                                className="flex flex-col items-center text-red-500 transition-transform duration-300 ease-in-out transform hover:scale-110 hover:text-red-500"
-                                                onClick={() => handleRemoveConnection(user._id)}
-                                                disabled={isButtonDisabled}
-                                            >
-                                                <HiOutlineUserRemove size={26}/>
-                                                <span className="hidden lg:block">Remove Connection</span>
-                                            </button>
-                                        </>
+                                            </>
+                                        )}</>
                                     )}
                                 </div>
                             </>
