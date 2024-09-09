@@ -370,13 +370,6 @@ const ProfileView = ({ userId }) => {
                                             <HiOutlineChat size={26}/>
                                             <span className="hidden lg:block">Start Chat</span>
                                     </button>
-                                    {/* <Link href={`/settings/${user._id}`}>
-                                        <button 
-                                            className="flex flex-col items-center text-blue-400 transition-transform duration-300 ease-in-out transform hover:scale-110 hover:text-blue-400">
-                                            <HiOutlineCog size={26}/>
-                                            <span className="hidden lg:block">Settings</span>
-                                        </button>
-                                    </Link> */}
                                     { !connectionExists ? (
                                         <>
                                             { reqExists==="request does not exist" ? (
@@ -440,32 +433,36 @@ const ProfileView = ({ userId }) => {
                             </>
                         ) : (
                             <>
-                                <hr className="border-t-2 border-gray-300 w-full my-4" />
-                                <div className="flex justify-between items-center gap-3 mt-3">
-                                    {curUser.admin && (
-                                        <button 
-                                            className="flex flex-col items-center text-green-500 transition-transform duration-300 ease-in-out transform hover:scale-110 hover:text-green-500"
-                                            onClick={handleCreateChat}
-                                            >
-                                                <HiOutlineChat size={26}/>
-                                                <span className="hidden lg:block">Start Chat</span>
-                                        </button>
-                                    )}
-                                    <Link href={`/settings/${user._id}`}>
-                                        <button 
-                                            className="flex flex-col items-center text-blue-400 transition-transform duration-300 ease-in-out transform hover:scale-110 hover:text-blue-400">
-                                            <HiOutlineCog size={26}/>
-                                            <span className="hidden lg:block">Settings</span>
-                                        </button>
-                                    </Link>
-                                    <Link href={`/network/${user._id}`}>
-                                        <button className="flex flex-col items-center text-blue-400 transition-transform duration-300 ease-in-out transform hover:scale-110 hover:text-blue-400">
-                                            <HiOutlineUserGroup size={26}/>
-                                            <span className="hidden lg:block">Network</span>
-                                        </button>
-                                    </Link>
-                                    <DeleteAccountBtn user={user}/>
-                                </div>
+                                { !user.admin && (
+                                    <>
+                                        <hr className="border-t-2 border-gray-300 w-full my-4" />
+                                        <div className="flex justify-between items-center gap-3 mt-3">
+                                            {curUser.admin && (
+                                                <button 
+                                                    className="flex flex-col items-center text-green-500 transition-transform duration-300 ease-in-out transform hover:scale-110 hover:text-green-500"
+                                                    onClick={handleCreateChat}
+                                                    >
+                                                        <HiOutlineChat size={26}/>
+                                                        <span className="hidden lg:block">Start Chat</span>
+                                                </button>
+                                            )}
+                                            <Link href={`/settings/${user._id}`}>
+                                                <button 
+                                                    className="flex flex-col items-center text-blue-400 transition-transform duration-300 ease-in-out transform hover:scale-110 hover:text-blue-400">
+                                                    <HiOutlineCog size={26}/>
+                                                    <span className="hidden lg:block">Settings</span>
+                                                </button>
+                                            </Link>
+                                            <Link href={`/network/${user._id}`}>
+                                                <button className="flex flex-col items-center text-blue-400 transition-transform duration-300 ease-in-out transform hover:scale-110 hover:text-blue-400">
+                                                    <HiOutlineUserGroup size={26}/>
+                                                    <span className="hidden lg:block">Network</span>
+                                                </button>
+                                            </Link>
+                                            <DeleteAccountBtn user={user}/>
+                                        </div>
+                                    </>
+                                )}
                             </>
                         )}
                     </div>
@@ -473,27 +470,29 @@ const ProfileView = ({ userId }) => {
             </div>
 
             {/* For the right page */}
-            <div className="w-3/5">
-                <div className="w-full h-full">
-                    {posts.length ? posts
-                    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)) // Sort posts by date (latest first)
-                    .map(p => (
-                        <PostCard p={p} curUser={curUser}/>    // Mh to peirakseis // key={p._id} //
-                    )) : (
-                        <>
-                            { user._id == curUser._id ? (
-                                <div className="flex flex-col justify-center items-center mt-10 space-y-4">
-                                    <span className="text-lg text-gray-500">You have not made any posts yet.</span>
-                                </div>
-                            ) : (
-                                <div className="flex flex-col justify-center items-center mt-10 space-y-4">
-                                    <span className="text-lg text-gray-500">{user.name} has not made any posts yet.</span>
-                                </div>
-                            ) }
-                        </>
-                    )}
+            { !user.admin && (
+                <div className="w-3/5">
+                    <div className="w-full h-full">
+                        {posts.length ? posts
+                        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)) // Sort posts by date (latest first)
+                        .map(p => (
+                            <PostCard p={p} curUser={curUser}/>    // Mh to peirakseis // key={p._id} //
+                        )) : (
+                            <>
+                                { user._id == curUser._id ? (
+                                    <div className="flex flex-col justify-center items-center mt-10 space-y-4">
+                                        <span className="text-lg text-gray-500">You have not made any posts yet.</span>
+                                    </div>
+                                ) : (
+                                    <div className="flex flex-col justify-center items-center mt-10 space-y-4">
+                                        <span className="text-lg text-gray-500">{user.name} has not made any posts yet.</span>
+                                    </div>
+                                ) }
+                            </>
+                        )}
+                    </div>
                 </div>
-            </div>
+            )}
 
         </div>
     </div>
