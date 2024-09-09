@@ -79,6 +79,7 @@ const HomePage = () => {
 
   // Add views to the posts
   const addViews = async () => {
+    if (!curPostIteration.length) return;
     const postIds = curPostIteration.map(p => p._id);
     const res = await fetch('/api/post/views', {
       method: 'PUT',

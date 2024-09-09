@@ -77,6 +77,7 @@ const ListingsPage = () => {
 
   // Add views to the listings
   const addViews = async () => {
+    if (!curListingIteration.length) return;
     console.log("curListingIteration here:", curListingIteration);
     const listingIds = curListingIteration.map(l => l._id);
     console.log("listingIds here:", listingIds);
