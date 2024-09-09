@@ -2,15 +2,9 @@ import mongoose from 'mongoose';
 import { faker } from '@faker-js/faker';
 import User from './models/user.mjs';
 import connectMongoDB from './lib/mongodb.mjs';
+import bcrypt from "bcryptjs";
 import dotenv from 'dotenv';
 dotenv.config();
-
-// const mongoose = require('mongoose');
-// const { faker } = require('@faker-js/faker');
-// const User = require('./models/user.js');
-// const connectMongoDB = require('./lib/mongodb.js');
-// require('dotenv').config();
-
 
 // To add more complex users in the database
 // we can first add 5 users that depend on random already existing users (excluding admin)
@@ -19,14 +13,28 @@ dotenv.config();
 // and so on until we reach 1000 users...
 
 
+// Select numUsers random users from the database
+const selectRandomUsers = async (numUsers) => {
+    const users = await User.find({admin: false});
+    const randomUsers = [];
+    for (let i = 0; i < numUsers; i++) {
+        const randomIndex = Math.floor(Math.random() * users.length);
+        randomUsers.push(users[randomIndex]);
+    }
+    return randomUsers;
+};
+
 // Generate random user
-const generateRandomUser = () => {
+const generateRandomUser = (hashedPassword) => {
+
+
+
     return {
         name: faker.person.firstName(),
         surname: faker.person.lastName(),
         email: faker.internet.email(),
         phone_number: faker.phone.number(),
-        password: "123", //faker.internet.password(),
+        password: hashedPassword, //faker.internet.password(),
         path: '/assets/logo_images/default-avatar-icon.jpg',
         post_counter: 0, //faker.datatype.number(),
         listing_counter: 0, //faker.datatype.number(),
@@ -52,9 +60,11 @@ const populateDB = async (numUsers) => {
 
         await connectMongoDB();
 
+        const hashedPassword = await bcrypt.hash("123", 10); // Hash the password "123"
+
         const users = [];
         for (let i = 0 ; i < numUsers; i++) {
-            const user = generateRandomUser();
+            const user = generateRandomUser(hashedPassword);
             users.push(user);
         }
 
@@ -70,4 +80,4 @@ const populateDB = async (numUsers) => {
 };
 
 // Populate the database with 5 users
-populateDB(5)
+populateDB(1)
