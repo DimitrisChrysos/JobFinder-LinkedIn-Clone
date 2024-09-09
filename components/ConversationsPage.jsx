@@ -12,7 +12,7 @@ const ConversationsPage = ({ user }) => {
   const { data: session } = useSession();
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [chats, setChats] = useState([-1]);
+  const [chats, setChats] = useState([]);
   const [text, setText] = useState("");
   const textareaRef = useRef(null);
   const [otherChatUserId, setOtherChatUserId] = useState(null);
@@ -118,6 +118,7 @@ const ConversationsPage = ({ user }) => {
         }
       }
     }
+
     handleLastChat(user.lastChatId);
     getChats();
 
@@ -216,7 +217,7 @@ const ConversationsPage = ({ user }) => {
       <div className="p-6 w-1/5 min-w-[250px] border-r border-gray-300 h-full text-left sticky top-20">
         <h2 className="text-2xl font-bold text-gray-800 mb-2">Chats:</h2>
         <hr className="w-10 border-t-4 border-blue-400 mb-4" />
-        {chats.map((chat) => (
+        { chats.map((chat) => (
           <div 
             onClick={() => handleChatClick(chat)} 
             className="my-2 cursor-pointer py-2 px-4 rounded-lg border border-gray-300 hover:border-gray-500 transition-transform duration-300 transform hover:scale-105"
