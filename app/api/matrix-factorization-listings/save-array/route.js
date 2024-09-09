@@ -2,6 +2,7 @@ import connectMongoDB from "@lib/mongodb";
 import { NextResponse } from "next/server";
 import MatrixListings from "@models/matrixListings";
 
+// If a matrix already exists, delete it and save a new one
 export async function POST(req) {
     try {
         const { matrix } = await req.json();

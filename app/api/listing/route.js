@@ -2,7 +2,7 @@ import connectMongoDB from "@lib/mongodb";
 import { NextResponse } from "next/server";
 import Listing from "@models/listing";
 
-// This function creates a post to the database and is called when a POST request is made to /api/post
+// This function creates a listing to the database and is called when a POST request is made to /api/listing
 export async function POST(req) {
     try {
         const {userId, job_pos, description, path} = await req.json();

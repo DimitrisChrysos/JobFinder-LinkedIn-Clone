@@ -116,7 +116,13 @@ const ListingCard = ({p, curUser}) => {
                         <span className="text-blue-400 pr-2">
                             <HiOutlineBriefcase className="inline-block w-6 h-6" />
                         </span>
-                        <span className="text-xl text-gray-700">Job Position: {p.job_pos}</span>
+                        <span className="text-xl text-gray-600">Job Position</span>
+                    </div>
+
+                    <div className="mx-2 px-2 items-center justify-center text-center">
+                        <div className="text-sm break-words gap-1">
+                            <span className="text-sm text-gray-700">{p.job_pos}</span>
+                        </div>
                     </div>
                 </div>
             )}

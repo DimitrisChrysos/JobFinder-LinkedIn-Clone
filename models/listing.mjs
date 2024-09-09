@@ -1,6 +1,7 @@
-import mongoose, { models, Schema } from "mongoose";
+import mongoose from "mongoose";
+const { models, Schema } = mongoose;
 
-const commentSchema = new Schema({
+const applicationSchema = new Schema({
     description: {
         type: String,
         default: ""
@@ -12,12 +13,16 @@ const commentSchema = new Schema({
     }
 }, {timestamps: true});
 
-const postSchema = new Schema({
+const listingSchema = new Schema({
     userId: {
         type: String,
         required: true
     },
-    text: {
+    job_pos: {
+        type: String,
+        required: true
+    },
+    description: {
         type: String,
         required: true
     },
@@ -25,16 +30,12 @@ const postSchema = new Schema({
         type: String,
         required: true
     },
-    like: {
-        type: Array,
-        default: []
-    },
-    comment: [commentSchema],
+    application: [applicationSchema],
     views: {
         type: Number,
         default: 0
     }
 }, {timestamps: true});
 
-const Post = models.Post || mongoose.model("Post", postSchema);
-export default Post;
+const Listing = models.Listing || mongoose.model("Listing", listingSchema);
+export default Listing;

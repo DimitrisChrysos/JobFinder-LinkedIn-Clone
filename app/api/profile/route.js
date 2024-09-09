@@ -54,8 +54,8 @@ export async function DELETE(req) {
 
         // Step 1: Find and delete all the chats of the user
         const chats = user.chats; // Get all chats of this user
-        console.log("user to delete: ", user);
-        console.log("chats: ", chats);
+        // console.log("user to delete: ", user);
+        // console.log("chats: ", chats);
         for (const chatId of chats) {
             const chat = await Chat.findById(chatId); // Get the chat with this id
             if (!chat) {
@@ -64,7 +64,7 @@ export async function DELETE(req) {
             }
             
             // Remove the chat from the two users' chat arrays
-            console.log("chat.participants: ", chat.participants);
+            // console.log("chat.participants: ", chat.participants);
             for (const participantId of chat.participants) {
                 try {
                     const user = await User.findById(participantId);
