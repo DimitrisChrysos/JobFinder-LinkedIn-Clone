@@ -304,7 +304,7 @@ const ProfileView = ({ userId }) => {
 
             {/* Profile Info */}
                 <div className="grid place-items-center sticky top-20">
-                    <div className="shadow-lg rounded-lg border-t-4 border-blue-400 mt-5 p-8  flex flex-col gap-2 my-6">
+                    <div className="w-8/12 shadow-lg rounded-lg border-t-4 border-blue-400 mt-5 p-8  flex flex-col gap-2 my-6">
                         <div className="relative w-20 h-20 rounded-full overflow-hidden mx-auto flex items-center justify-center">
                             <Image 
                                 src={user?.path}
@@ -315,7 +315,7 @@ const ProfileView = ({ userId }) => {
                             />
                         </div>
                         <hr className="border-t-2 border-gray-300 w-full my-4" />
-                        <div className="text-sm">
+                        <div className="text-sm break-words">
                             Name: <span className="font-bold">{user.name}</span> <br />
                             Surname: <span className="font-bold">{user.surname}</span> <br />
                             Email: <span className="font-bold">{user.email}</span> <br />
@@ -325,16 +325,16 @@ const ProfileView = ({ userId }) => {
                                     {user.job_position != "" && <>
                                         Job Position: <span className="font-bold">{user.job_position}</span> <br />
                                     </>}
-                                    {user.job_position != "" && <>
+                                    {user.employment_agency != "" && <>
                                         Employment Agency: <span className="font-bold">{user.employment_agency}</span> <br />
                                     </>}
-                                    {user.job_position != "" && <>
-                                        Experience: <span className="font-bold">{user.experience}</span> <br />
+                                    {user.experience != "" && <>
+                                        Experience: <span className="font-bold break-words">{user.experience}</span> <br />
                                     </>}
-                                    {user.job_position != "" && <>
+                                    {user.education != "" && <>
                                         Education: <span className="font-bold">{user.education}</span> <br />
                                     </>}
-                                    {user.job_position != "" && <>
+                                    {user.skills != "" && <>
                                         skills: <span className="font-bold">{user.skills}</span> <br />
                                     </>}
                                 </>

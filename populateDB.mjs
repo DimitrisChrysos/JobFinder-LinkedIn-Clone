@@ -27,7 +27,7 @@ const generateRandomUser = () => {
         email: faker.internet.email(),
         phone_number: faker.phone.number(),
         password: faker.internet.password(),
-        path: faker.internet.url(),
+        path: '/assets/logo_images/default-avatar-icon.jpg',
         post_counter: 0, //faker.datatype.number(),
         listing_counter: 0, //faker.datatype.number(),
         job_position: faker.person.jobTitle(),
