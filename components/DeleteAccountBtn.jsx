@@ -62,9 +62,9 @@ const DeleteAccountBtn = ({ user }) => {
   }
 
   return (
-    <button onClick={deleteAccount} className="bg-red-500 text-white border border-red-500 font-bold py-1.5 px-5 mt-3 transition-all hover:bg-white hover:text-red-500 text-center text-sm font-inter flex items-center justify-center gap-2">
-      <HiOutlineTrash size={24}/>
-      <span>Delete Account</span>
+    <button onClick={deleteAccount} className="flex flex-col items-center text-red-500 transition-transform duration-300 ease-in-out transform hover:scale-110 hover:text-red-500">
+      <HiOutlineTrash size={26}/>
+      <span className="hidden lg:block">Delete Account</span>
     </button>
   )
 }

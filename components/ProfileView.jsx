@@ -300,7 +300,7 @@ const ProfileView = ({ userId }) => {
         <div className="w-full h-full flex space-x-5">
 
             {/* For the left page */}
-            <div className="w-3/5">
+            <div className="w-full">
 
             {/* Profile Info */}
                 <div className="grid place-items-center sticky top-20">
@@ -361,92 +361,111 @@ const ProfileView = ({ userId }) => {
                         { (user._id != curUser._id && !curUser.admin) ? (
                             <>
                                 <hr className="border-t-2 border-gray-300 w-full my-4" />
-                                <button 
-                                    className="bg-green-500 text-white border border-green-500 w-full font-bold py-1.5 px-5 mt-3 transition-all hover:bg-white hover:text-green-500 text-center text-sm font-inter flex items-center justify-center gap-2"
-                                    onClick={handleCreateChat}
-                                >
-                                    <HiOutlineChat size={24}/>
-                                    <span>Start Chat</span>
-                                </button>
-                                { !connectionExists ? (
-                                    <>
-                                        { reqExists==="request does not exist" ? (
-                                            <button 
-                                                className="bg-blue-400 text-white border border-blue-400 w-full font-bold py-1.5 px-5 mt-3 transition-all hover:bg-white hover:text-blue-400 text-center text-sm font-inter flex items-center justify-center gap-2"
-                                                onClick={handleAddCancelConnection}
-                                                disabled={isButtonDisabled}
-                                            >
-                                                <HiOutlineUserAdd size={24}/>
-                                                <span>Add Connection</span>
-                                            </button>
-                                        ) : reqExists==="request exists with switched roles" ? (
-                                            <>
-                                                <button 
-                                                    className="bg-blue-400 text-white border border-blue-400 w-full font-bold py-1.5 px-5 mt-3 transition-all hover:bg-white hover:text-blue-400 text-center text-sm font-inter flex items-center justify-center gap-2"
-                                                    onClick={() => handleAcceptConnection(user._id)}
-                                                    disabled={isButtonDisabled}
-                                                >
-                                                    <HiOutlineCheck size={24}/>
-                                                    <span>Accept Request</span>
-                                                </button>
-                                                <button 
-                                                    className="bg-red-500 text-white border border-red-500 w-full font-bold py-1.5 px-5 mt-3 transition-all hover:bg-white hover:text-red-500 text-center text-sm font-inter flex items-center justify-center gap-2"
-                                                    onClick={() => handleRejectConnection(user._id)}
-                                                    disabled={isButtonDisabled}
-                                                >
-                                                    <HiX size={24}/>
-                                                    <span>Reject Request</span>
-                                                </button>
-                                            </>
-                                        ) : (
-                                            <button 
-                                                className="bg-red-500 text-white border border-red-500 w-full font-bold py-1.5 px-5 mt-3 transition-all hover:bg-white hover:text-red-500 text-center text-sm font-inter flex items-center justify-center gap-2"
-                                                onClick={handleAddCancelConnection}
-                                                disabled={isButtonDisabled}
-                                            >
-                                                <HiOutlineBan size={24}/>
-                                                <span>Cancel Request</span>
-                                            </button>
-                                        )}
-                                    </>
-                                ) : (
-                                    <>
-                                        <Link href={`/network/${user._id}`}>
-                                            <button className="bg-blue-400 text-white border border-blue-400 w-full font-bold py-1.5 px-5 mt-3 transition-all hover:bg-white hover:text-blue-400 text-center text-sm font-inter flex items-center justify-center gap-2">
-                                                <HiOutlineUserGroup size={24}/>
-                                                <span>Network</span>
-                                            </button>
-                                        </Link>
-                                        <button 
-                                            className="bg-red-500 text-white border border-red-500 w-full font-bold py-1.5 px-5 mt-3 transition-all hover:bg-white hover:text-red-500 text-center text-sm font-inter flex items-center justify-center gap-2"
-                                            onClick={() => handleRemoveConnection(user._id)}
-                                            disabled={isButtonDisabled}
+                                <div className="flex justify-center items-center gap-10 mt-3">
+                                    
+                                    <button 
+                                        className="flex flex-col items-center text-green-500 transition-transform duration-300 ease-in-out transform hover:scale-110 hover:text-green-500"
+                                        onClick={handleCreateChat}
                                         >
-                                            <HiOutlineUserRemove size={24}/>
-                                            <span>Remove Connection</span>
+                                            <HiOutlineChat size={26}/>
+                                            <span className="hidden lg:block">Start Chat</span>
+                                    </button>
+                                    {/* <Link href={`/settings/${user._id}`}>
+                                        <button 
+                                            className="flex flex-col items-center text-blue-400 transition-transform duration-300 ease-in-out transform hover:scale-110 hover:text-blue-400">
+                                            <HiOutlineCog size={26}/>
+                                            <span className="hidden lg:block">Settings</span>
                                         </button>
-                                    </>
-                                )}
+                                    </Link> */}
+                                    { !connectionExists ? (
+                                        <>
+                                            { reqExists==="request does not exist" ? (
+                                                <button 
+                                                    className="flex flex-col items-center text-blue-400 transition-transform duration-300 ease-in-out transform hover:scale-110 hover:text-blue-400"
+                                                    onClick={handleAddCancelConnection}
+                                                    disabled={isButtonDisabled}
+                                                >
+                                                    <HiOutlineUserAdd size={26}/>
+                                                    <span className="hidden lg:block">Add Connection</span>
+                                                </button>
+                                            ) : reqExists==="request exists with switched roles" ? (
+                                                <>
+                                                    <button 
+                                                        className="flex flex-col items-center text-blue-400 transition-transform duration-300 ease-in-out transform hover:scale-110 hover:text-blue-400"
+                                                        onClick={() => handleAcceptConnection(user._id)}
+                                                        disabled={isButtonDisabled}
+                                                    >
+                                                        <HiOutlineCheck size={26}/>
+                                                        <span className="hidden lg:block">Accept Request</span>
+                                                    </button>
+                                                    <button 
+                                                        className="flex flex-col items-center text-red-500 transition-transform duration-300 ease-in-out transform hover:scale-110 hover:text-red-500"
+                                                        onClick={() => handleRejectConnection(user._id)}
+                                                        disabled={isButtonDisabled}
+                                                    >
+                                                        <HiX size={26}/>
+                                                        <span className="hidden lg:block">Reject Request</span>
+                                                    </button>
+                                                </>
+                                            ) : (
+                                                <button 
+                                                    className="flex flex-col items-center text-red-500 transition-transform duration-300 ease-in-out transform hover:scale-110 hover:text-red-500"
+                                                    onClick={handleAddCancelConnection}
+                                                    disabled={isButtonDisabled}
+                                                >
+                                                    <HiOutlineBan size={26}/>
+                                                    <span className="hidden lg:block">Cancel Request</span>
+                                                </button>
+                                            )}
+                                        </>
+                                    ) : (
+                                        <>
+                                            <Link href={`/network/${user._id}`}>
+                                                <button className="flex flex-col items-center text-blue-400 transition-transform duration-300 ease-in-out transform hover:scale-110 hover:text-blue-400">
+                                                    <HiOutlineUserGroup size={26}/>
+                                                    <span className="hidden lg:block">Network</span>
+                                                </button>
+                                            </Link>
+                                            <button 
+                                                className="flex flex-col items-center text-red-500 transition-transform duration-300 ease-in-out transform hover:scale-110 hover:text-red-500"
+                                                onClick={() => handleRemoveConnection(user._id)}
+                                                disabled={isButtonDisabled}
+                                            >
+                                                <HiOutlineUserRemove size={26}/>
+                                                <span className="hidden lg:block">Remove Connection</span>
+                                            </button>
+                                        </>
+                                    )}
+                                </div>
                             </>
                         ) : (
                             <>
                                 <hr className="border-t-2 border-gray-300 w-full my-4" />
-                                {curUser.admin && (
-                                    <button 
-                                        className="bg-green-500 text-white border border-green-500 w-full font-bold py-1.5 px-5 mt-3 transition-all hover:bg-white hover:text-green-500 text-center text-sm font-inter flex items-center justify-center gap-2"
-                                        onClick={handleCreateChat}
-                                    >
-                                        <HiOutlineChat size={24}/>
-                                        <span>Start Chat</span>
-                                    </button>
-                                )}
-                                <Link href={`/settings/${user._id}`}>
-                                    <button className="bg-blue-400 text-white border border-blue-400 w-full font-bold py-1.5 px-5 mt-3 transition-all hover:bg-white hover:text-blue-400 text-center text-sm font-inter flex items-center justify-center gap-2">
-                                        <HiOutlineCog size={24}/>
-                                        <span>Settings</span>
-                                    </button>
-                                </Link>
-                                <DeleteAccountBtn user={user}/>
+                                <div className="flex justify-between items-center gap-3 mt-3">
+                                    {curUser.admin && (
+                                        <button 
+                                            className="flex flex-col items-center text-green-500 transition-transform duration-300 ease-in-out transform hover:scale-110 hover:text-green-500"
+                                            onClick={handleCreateChat}
+                                            >
+                                                <HiOutlineChat size={26}/>
+                                                <span className="hidden lg:block">Start Chat</span>
+                                        </button>
+                                    )}
+                                    <Link href={`/settings/${user._id}`}>
+                                        <button 
+                                            className="flex flex-col items-center text-blue-400 transition-transform duration-300 ease-in-out transform hover:scale-110 hover:text-blue-400">
+                                            <HiOutlineCog size={26}/>
+                                            <span className="hidden lg:block">Settings</span>
+                                        </button>
+                                    </Link>
+                                    <Link href={`/network/${user._id}`}>
+                                        <button className="flex flex-col items-center text-blue-400 transition-transform duration-300 ease-in-out transform hover:scale-110 hover:text-blue-400">
+                                            <HiOutlineUserGroup size={26}/>
+                                            <span className="hidden lg:block">Network</span>
+                                        </button>
+                                    </Link>
+                                    <DeleteAccountBtn user={user}/>
+                                </div>
                             </>
                         )}
                     </div>
