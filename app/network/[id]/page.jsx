@@ -37,7 +37,7 @@ const Network = ({ params }) => {
     }
 
     if (session) {
-      if (session.user.id !== id) {
+      if (session.user.id !== id && !session.user.admin) {
         checkUsersConnection()
       } else {
         setCheckedUsersConnection(true);

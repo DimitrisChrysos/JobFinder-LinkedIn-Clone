@@ -221,7 +221,7 @@ const ConversationsPage = ({ user }) => {
             onClick={() => handleChatClick(chat)} 
             className="my-2 cursor-pointer py-2 px-4 rounded-lg border border-gray-300 hover:border-gray-500 transition-transform duration-300 transform hover:scale-105"
           >
-              <ChatCard chat={chat}/>
+            <ChatCard chat={chat}/>
           </div>
         ))}
       </div>

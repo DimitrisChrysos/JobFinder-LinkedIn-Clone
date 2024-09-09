@@ -37,12 +37,13 @@ const DeleteAccountBtn = ({ user }) => {
 
   const deleteAccount = async () => {
 
-    const confirmDelete = confirm('Are you sure you want to delete your account?');
+    const confirmDelete = confirm(`Are you sure you want to delete account "${user.name} ${user.surname}"?`);
   
     
     if (confirmDelete) {
       
-      deleteImage(user._id, user.path);
+      if (user.path !== "/assets/logo_images/default-avatar-icon.jpg")
+        deleteImage(user._id, user.path);
 
       const res = await fetch(`/api/profile?id=${user._id}`, {
         method: 'DELETE',
