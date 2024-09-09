@@ -1,4 +1,5 @@
-import mongoose, { models, Schema } from "mongoose";
+import mongoose from "mongoose";
+const { models, Schema } = mongoose;
 
 const notificationSchema = new Schema({
     description: {
