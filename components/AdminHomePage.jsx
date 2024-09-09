@@ -5,7 +5,7 @@ import { useSession } from 'next-auth/react';
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { HiDownload, HiOutlineDownload } from "react-icons/hi";
+import { HiDownload, HiOutlineDownload, HiOutlineTrash } from "react-icons/hi";
 import Loading from "./Loading";
 import xml2js from "xml2js";
 
@@ -140,6 +140,14 @@ const AdminHomePage = () => {
     document.body.removeChild(link);
   };
 
+  const handleDelete = async () => {
+      for (const userId of selectedUsers) {
+
+        if (userId == -1) continue;
+        
+      }
+  } 
+
   return (
     <div className="w-full flex flex-col sm:flex-row p-2 mt-20 gap-4">
 
@@ -164,6 +172,12 @@ const AdminHomePage = () => {
                 <span>JSON</span>
             </button>
           </div>
+          <button 
+            className="bg-red-400 text-white border border-red-400 mt-3 w-full font-bold py-1.5 px-5 transition-all hover:bg-white hover:text-red-400 text-center text-sm font-inter flex items-center justify-center gap-2"
+            onClick={handleXmlDownload}>
+              <HiOutlineTrash size={24}/>
+              <span>Delete selected users</span>
+          </button>
         </div>
       </div>
       

@@ -26,6 +26,17 @@ const selectRandomUsers = async (numUsers) => {
     return randomUsers;
 };
 
+// Select numPosts random posts from the database
+const selectRandomPosts = async (numPosts) => {
+    const posts = await Post.find();
+    const randomPosts = [];
+    for (let i = 0; i < numPosts; i++) {
+        const randomIndex = Math.floor(Math.random() * posts.length);
+        randomPosts.push(posts[randomIndex]);
+    }
+    return randomPosts;
+};
+
 const skillPool = [
     'JavaScript', 'React', 'Node.js', 'Python', 'HTML/CSS', 'Project Management', 'UI/UX Design',
     'Data Analysis', 'Machine Learning', 'Cloud Computing', 'DevOps', 'Agile Methodologies',
@@ -105,6 +116,55 @@ const generateRandomListings = async (user, numListings) => {
     }
 }
 
+// Make random connections
+const makeRandomConnections = async (user, numConnections) => {
+    const randomUsers = await selectRandomUsers(numConnections);
+    for (const randomUser of randomUsers) {
+        await User.updateOne({ _id : randomUser._id}, {
+            $push: { connections: user._id.toString() }
+        })
+        await User.updateOne({ _id : user._id}, {
+            $push: { connections: randomUser._id.toString() }
+        })
+        console.log(`User ${user.name} ${user.surname} connected with ${randomUser.name} ${randomUser.surname}`);
+    }
+}
+
+// Like random posts
+const likeRandomPosts = async (user, numLikes) => {
+    const randomPosts = await selectRandomPosts(numLikes);
+    const userId = user._id.toString();
+    for (const randomPost of randomPosts) {
+        const randomPostId = randomPost._id.toString();        
+
+        // Like the post
+        await Post.updateOne({ _id : randomPostId}, {
+            $push: { like: userId }
+        })
+
+        // Add the post to the like array of the user
+        await User.updateOne({ _id : userId}, {
+            $push : { likedPosts: randomPostId }
+        })
+
+        // Add the post to the user's interactedWithPosts array if an interaction doesn't already exist
+        if (!user.interactedWithPosts.includes(randomPostId)) {
+            await User.updateOne({ _id : userId}, {
+                $push: { interactedWithPosts: randomPostId }
+            })
+        }
+
+        // Add a notification to the user who posted the post,
+        // if the post creator is not the one who liked the post
+        if (randomPost.userId !== userId) {
+            await User.updateOne({ _id : randomPost.userId}, {
+                $push: { notifications: { description: " liked your ", userId: userId, postId: randomPostId} }
+            })
+        }
+
+        console.log(`User ${user.name} ${user.surname} liked post ${randomPostId} from user ${randomPost.userId}`);
+    }
+}
             
 
 const populateDB = async (numUsers) => {
@@ -120,9 +180,6 @@ const populateDB = async (numUsers) => {
 
         // const users = [];
         for (let i = 0 ; i < numUsers; i++) {
-
-            // Select 5 random users from the database
-            const randomUsers = await selectRandomUsers(5);
 
             const userSkills = Math.floor(Math.random() * 10) + 1; // Set the random number of skills (1-10)
             const userPosts = Math.floor(Math.random() * 4) + 1; // Set the random number of posts (1-4)
@@ -144,6 +201,12 @@ const populateDB = async (numUsers) => {
 
             // Create the users listings
             await generateRandomListings(newUser, userListings);
+
+            // Make the user connect with random users
+            await makeRandomConnections(newUser, userConnections);
+
+            // Make the user like random posts
+            await likeRandomPosts(newUser, 1);
         }
 
 

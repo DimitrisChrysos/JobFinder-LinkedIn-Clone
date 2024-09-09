@@ -44,7 +44,7 @@ const PostView = ({ params }) => {
 
 
   return (
-    <div className="w-full min-h-screen flex flex-col items-center pt-16">
+    <div className="w-full min-h-screen flex flex-col items-center">
       <div className="mt-20 w-2/4 h-full">
         <PostCard p={post} curUser={user}/>
       </div>

@@ -266,10 +266,10 @@ const PostCard = ({p, curUser}) => {
                                         <div className="ml-2 border-b p-2" key={comment?._id}>
                                             <div className="flex items-center space-x-2 p-2">
                                                 <div className="relative w-8 h-8 min-w-[32px] min-h-[32px] rounded-full overflow-hidden border-2 border-gray-300">
-                                                    <Link href={`/view_profile/${comment?.userId?._id}`}>
+                                                    <Link href={comment?.userId?._id ? `/view_profile/${comment?.userId?._id}` : `/home`}>
                                                         <div className="relative w-full h-full">
                                                             <Image
-                                                                src={comment.userId.path ? comment?.userId?.path : '/assets/logo_images/default-avatar-icon.jpg'}
+                                                                src={comment.userId?.path ? comment?.userId?.path : '/assets/logo_images/default-avatar-icon.jpg'}
                                                                 alt='avatar' 
                                                                 layout="fill"
                                                                 objectFit="cover"
@@ -279,7 +279,11 @@ const PostCard = ({p, curUser}) => {
                                                     </Link>
                                                 </div>
                                                 <div>
-                                                    <p className="font-semibold text-xs">{comment?.userId?.name} {comment?.userId?.surname}</p>
+                                                    {comment?.userId?._id ?
+                                                        <p className="font-semibold text-xs">{comment.userId.name} {comment.userId.surname}</p>
+                                                        :
+                                                        <p className="font-semibold text-xs">Deleted User</p>
+                                                    }
                                                 </div>
                                             </div>
                                             <div className="mx-2">

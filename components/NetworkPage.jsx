@@ -83,16 +83,16 @@ const NetworkPage = ({ userId }) => {
           </div>
           <hr className="border-t-2 border-gray-300 w-full my-4" />
           <div>
-            <span className="font-bold">{con.name}</span>
+            <span className="font-bold break-words">{con.name}</span>
           </div>
           <div>
-            <span className="font-bold">{con.surname}</span>
+            <span className="font-bold break-words">{con.surname}</span>
           </div>
           <div>
-            <span className="font-bold">{con.job_position}</span>
+            <span className="font-bold break-words">{con.job_position}</span>
           </div>
           <div>
-            <span className="font-bold">{con.employment_agency}</span>
+            <span className="font-bold break-words">{con.employment_agency}</span>
           </div>
         </div>
       ))}

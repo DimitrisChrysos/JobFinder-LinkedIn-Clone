@@ -204,9 +204,16 @@ const NotificationsPage = () => {
                                         onClick={() => handleRemoveNotification(not._id)}
                                     />
                                 </div>
-                                <Link href={`/view_profile/${not.userId._id}`} className="text-blue-500 hover:underline">
-                                    {not.userId.name} {not.userId.surname}
-                                </Link>
+                                {not.userId?._id ?
+                                    <Link href={`/view_profile/${not.userId._id}`} className="text-blue-500 hover:underline">
+                                        <span> {not.userId.name} {not.userId.surname}, </span>
+                                    </Link>
+                                    :
+                                    <span>Deleted user, </span>
+                                }
+                                {/* <Link href={not.userId?._id ? `/view_profile/${not.userId._id}` : `home`} className="text-blue-500 hover:underline">
+                                    {not.userId?.name ? not.userId.name + " " + not.userId.surname: "deleted user"}
+                                </Link> */}
                                 {not.description}
                                 <Link href={`/post_view/${not.postId}`} className="text-blue-500 hover:underline">
                                     post.

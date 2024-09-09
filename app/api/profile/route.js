@@ -119,7 +119,19 @@ export async function DELETE(req) {
         // Delete the listings themselves
         await Listing.deleteMany({ userId: id });
 
-        // Step 4: Delete the user
+        // Step 4: Remove the connection from all users
+        const connectionIds = user.connections; // Get all connections of this user
+        for (const connectionId of connectionIds) {
+            await User.updateOne({ _id : user._id}, {
+                $pull : { connections: connectionId }
+            })
+
+            await User.updateOne({ _id : connectionId}, {
+                $pull : { connections: user._id }
+            })
+        }
+
+        // Step 5: Delete the user
         await User.findByIdAndDelete(id); // Delete the user with this id
 
         return NextResponse.json({ message: "User and associated posts, listings and files deleted." }, { status: 200 }); // Return a success message
