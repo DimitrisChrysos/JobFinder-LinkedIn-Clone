@@ -137,7 +137,7 @@ const likeRandomPosts = async (user, numLikes) => {
     for (const randomPost of randomPosts) {
         const randomPostId = randomPost._id.toString();        
 
-        // Like the post
+        // Add a like to the post
         await Post.updateOne({ _id : randomPostId}, {
             $push: { like: userId }
         })
@@ -163,6 +163,42 @@ const likeRandomPosts = async (user, numLikes) => {
         }
 
         console.log(`User ${user.name} ${user.surname} liked post ${randomPostId} from user ${randomPost.userId}`);
+    }
+}
+
+// Comment random posts
+const commentRandomPosts = async (user, numComments) => {
+    const randomPosts = await selectRandomPosts(numComments);
+    const userId = user._id.toString();
+    for (const randomPost of randomPosts) {
+        const randomPostId = randomPost._id.toString(); 
+    
+        // Add a comment to the post
+        await Post.updateOne({ _id : randomPostId }, {
+            $push: { comment: { description: faker.lorem.sentence(), userId: userId } }
+        });
+
+        // Add the post to the comment array of the user
+        await User.updateOne({ _id : userId}, {
+            $push : { commentedPosts: randomPostId }
+        })
+
+        // Add the post to the user's interactedWithPosts array if an interaction doesn't already exist
+        if (!user.interactedWithPosts.includes(randomPostId)) {
+            const updateUser = await User.updateOne({ _id : userId}, {
+                $push: { interactedWithPosts: randomPostId }
+            })
+        }
+
+        // Add a notification to the user who posted the post,
+        // only if the post creator is not the one who commented on the post
+        if (randomPost.userId !== userId) {
+            const updatePostUser = await User.updateOne({ _id : randomPost.userId}, {
+                $push: { notifications: { description: " commented on your ", userId: userId, postId: randomPostId} }
+            })
+        }
+
+        console.log(`User ${user.name} ${user.surname} commented on post ${randomPostId} from user ${randomPost.userId}`);
     }
 }
             
@@ -206,7 +242,10 @@ const populateDB = async (numUsers) => {
             await makeRandomConnections(newUser, userConnections);
 
             // Make the user like random posts
-            await likeRandomPosts(newUser, 1);
+            await likeRandomPosts(newUser, userLikes);
+
+            // Make the user comment on random posts
+            await commentRandomPosts(newUser, userComments);
         }
 
 
