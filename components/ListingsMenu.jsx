@@ -1,8 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { HiOutlineUserCircle } from "react-icons/hi";
 import { HiOutlineBriefcase } from "react-icons/hi";
-import { HiOutlineUserGroup } from "react-icons/hi";
 
 const ListingsMenu = ({ user }) => {
   return (
@@ -16,9 +14,9 @@ const ListingsMenu = ({ user }) => {
                 className="absolute inset-0 w-full h-full" 
             />
         </div>
-        {/* <div className="flex justify-center items-center mt-3">
-            <span>Welcome {user.name}!</span>
-        </div> */}
+        <div className="flex justify-center items-center mt-3">
+            <span>{user.name} {user.surname}</span>
+        </div>
         <div className="flex justify-center items-center">
             <hr className="border-t-2 border-gray-300 w-3/4 my-4" />
         </div>

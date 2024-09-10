@@ -89,7 +89,7 @@ const generateRandomPosts = async (user, numPosts) => {
             userId: user._id,
             text: faker.lorem.sentence(),
             path: "no-file",
-            views: Math.floor(Math.random() * 100) + 1,
+            views: Math.floor(Math.random() * 1000) + 1,
         }
         const newPost = await Post.create(post);
         console.log(`Post ${newPost._id} inserted successfully`);
@@ -104,7 +104,7 @@ const generateRandomListings = async (user, numListings) => {
             job_pos: faker.person.jobTitle(),
             description: generateSkills(10),
             path: "no-file",
-            views: Math.floor(Math.random() * 100) + 1,
+            views: Math.floor(Math.random() * 1000) + 1,
         }
         const newListing = await Listing.create(listing);
         console.log(`Listing ${newListing._id} inserted successfully`);
@@ -222,20 +222,32 @@ const populateDB = async (numUsers) => {
             console.log(`User ${newUser.name} ${newUser.surname} inserted successfully`);
 
             // Create the user's posts
-            await generateRandomPosts(newUser, userPosts);
+            const postsPromise = generateRandomPosts(newUser, userPosts);
 
             // Create the user's listings
-            await generateRandomListings(newUser, userListings);
+            const listingsPromise = generateRandomListings(newUser, userListings);
 
-            // Make the user connect with random users
-            await makeRandomConnections(newUser, userConnections);
+            const promises = [postsPromise, listingsPromise];
 
-            // Make the user like random posts
-            await likeRandomPosts(newUser, userLikes);
-
-            // Make the user comment on random posts
-            await commentRandomPosts(newUser, userComments);
+            // Make the user connect with random users, like random posts, and comment on random posts
+            // Only if the user is not one of the first 15 users
+            if (i >= 15) {
+                // Make the user connect with random users
+                const connectionsPromise = makeRandomConnections(newUser, userConnections);
+    
+                // Make the user like random posts
+                const likesPromise = likeRandomPosts(newUser, userLikes);
+    
+                // Make the user comment on random posts
+                const commentsPromise = commentRandomPosts(newUser, userComments);
+            
+                promises.push(connectionsPromise, likesPromise, commentsPromise);
+            }
         }
+
+        // Wait for all promises to complete
+        await Promise.all(promises);
+        
         console.log(`${numUsers} Users inserted successfully`);
 
         // Close the connection
@@ -245,6 +257,5 @@ const populateDB = async (numUsers) => {
     }
 };
 
-// CAUTION!!!:
-// The database needs at least 5 users and 10 posts to work properly
-populateDB(1) // Populate the database with 5 users
+// Populate the database with 1 user
+populateDB(20)

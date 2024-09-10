@@ -317,8 +317,7 @@ const getFactorizedMatrix = async (R, newP, newQ, users, posts) => {
 const startMatrixFactorization = async () => {
     try {
         // Get the users and posts
-        const users = await getUsers();
-        const posts = await getPosts();
+        const [users, posts] = await Promise.all([getUsers(), getPosts()]);
 
         // Get the table dimensions
         const n = users.length;

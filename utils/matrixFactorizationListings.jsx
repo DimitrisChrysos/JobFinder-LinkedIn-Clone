@@ -36,53 +36,24 @@ const getListings = async () => {
     }
 };
 
-const getViews = async (listingId) => {
-    try {
-        const url = new URL(`/api/listing/views?listingId=${listingId}`, baseUrl);
-        const res = await fetch(url.toString(), { agent });
-        if (!res.ok) {
-            throw new Error('Failed to fetch views');
-        }
-        const data = await res.json();
-        return data.views;
-    } catch (error) {
-        console.log("An error occurred while getting the views:", error);
-        throw error;
-    }
+const getViews = (listing) => {
+    return listing.views;
 }
 
-const areConnected = async (user, listing) => {
+const areConnected = (user, listing) => {
     try {
-        const url = new URL(`/api/connections/are-connected`, baseUrl);
-        const res = await fetch(url.toString(), {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                id1: user._id,
-                id2: listing.userId
-            }),
-            agent: agent
-        });
-        if (!res.ok) {
-            throw new Error('Failed to check if users are connected');
-        }
-
-        const data = await res.json();
-        if (data.message === "connection exists")
+        if (user.connections.includes(listing.userId))
             return true;
-        else if (data.message === "connection does not exist")
+        else
             return false;
+
     } catch (error) {
         console.log("An error occurred while checking if users are connected:", error);
         throw error;
     }
 };
 
-
-
-const createMatrixR = async (n, m, users, listings) => {
+const createMatrixR = (n, m, users, listings) => {
 
     try {
         // Create a matrix with n rows and m columns
@@ -106,10 +77,11 @@ const createMatrixR = async (n, m, users, listings) => {
                 const listing = listings[j - 1];
 
                 // Get if the user is connected with the creator of the listing
-                const usersConnected = await areConnected(user, listing);
-                
+                const usersConnected = areConnected(user, listing);
+
                 // Get the views of the listing and add them to the matrix
-                const views = await getViews(listing._id);
+                const views = getViews(listing);
+
                 if (usersConnected) {
                     if (views === 0)
                         matrix[i][j] = 1;
@@ -129,17 +101,25 @@ const createMatrixR = async (n, m, users, listings) => {
 };
 
 // Matrix Factorization
-const matrixFactorization = async (R, P, Q, K, alpha, beta, steps) => {
+const matrixFactorization = (R, P, Q, K, alpha, beta, steps) => {
     try {
-        // TODO: fill in the code for matrix factorization
         for (let step = 0; step < steps; step++) {
             for (let i = 0; i < R.length; i++) {
                 for (let j = 0; j < R[i].length; j++) {
                     if (R[i][j] > 0) {
                         let eij = R[i][j] - P[i].reduce((acc, val, idx) => acc + val * Q[idx][j], 0);
                         for (let k = 0; k < K; k++) {
+                            let oldPik = P[i][k];
+                            let oldQkj = Q[k][j];
                             P[i][k] = P[i][k] + alpha * (2 * eij * Q[k][j] - beta * P[i][k]);
                             Q[k][j] = Q[k][j] + alpha * (2 * eij * P[i][k] - beta * Q[k][j]);
+                            if (eij==NaN || oldPik==NaN || oldQkj==NaN) {
+                                // pause here for 3 seconds
+                                setTimeout(() => {
+                                    console.log('Paused for 3 seconds');
+                                }, 3000);
+                            }
+                            console.log(`Step ${step}, i ${i}, j ${j}, k ${k}: eij ${eij}, P[i][k] ${oldPik} -> ${P[i][k]}, Q[k][j] ${oldQkj} -> ${Q[k][j]}`);
                         }
                     }
                 }
@@ -156,6 +136,7 @@ const matrixFactorization = async (R, P, Q, K, alpha, beta, steps) => {
                     }
                 }
             }
+            console.log(`Step ${step}: error ${e}`);
             if (e < 0.001) {
                 break;
             }
@@ -168,7 +149,7 @@ const matrixFactorization = async (R, P, Q, K, alpha, beta, steps) => {
     }
 };
 
-const getFactorizedMatrix = async (R, newP, newQ, users, listings) => {
+const getFactorizedMatrix = (R, newP, newQ, users, listings) => {
     const R_hat = Array(R.length + 1).fill(0).map(() => Array(newQ[0].length + 1).fill(0));
     
     // Fill the first row with listing IDs
@@ -220,16 +201,19 @@ const postMatrix = async (matrix) => {
 const startMatrixFactorization = async () => {
     try {
         // Get the users and listings
-        const users = await getUsers();
-        const listings = await getListings();
+        const [users, listings] = await Promise.all([getUsers(), getListings()]);
 
         // Get the table dimensions
         const n = users.length;
         const m = listings.length;
 
         // Create the R table with users and listings
-        const rTable = await createMatrixR(n, m, users, listings);
+        const rTable = createMatrixR(n, m, users, listings);
         console.log("rTable: ", rTable);
+
+        // TODELETE LATER!
+        // const data = await postMatrix(rTable);
+        ///////////////
         
         // Extract the actual ratings matrix without headers for matrix factorization
         const R = rTable.slice(1).map(row => row.slice(1));
@@ -244,11 +228,15 @@ const startMatrixFactorization = async () => {
         const pTable = Array(n).fill().map(() => Array(K).fill().map(() => Math.random()));
         const qTable = Array(K).fill().map(() => Array(m).fill().map(() => Math.random()));
 
+        console.log("P: ", pTable, "Q: ", qTable);
+
         // Perform matrix factorization on the R table
-        const { P: newP, Q: newQ } = await matrixFactorization(R, pTable, qTable, K, alpha, beta, steps);
+        const { P: newP, Q: newQ } = matrixFactorization(R, pTable, qTable, K, alpha, beta, steps);
+        console.log("newP: ", newP, "newQ: ", newQ);
         
-        const R_hat = await getFactorizedMatrix(R, newP, newQ, users, listings);
-        console.log("R_hat: ", R_hat);
+
+        const R_hat = getFactorizedMatrix(R, newP, newQ, users, listings);
+        // console.log("R_hat: ", R_hat);
         
         // Post the matrix to the database
         const matrix = R_hat;

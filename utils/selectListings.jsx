@@ -26,11 +26,27 @@ export async function selectListings(userId, seenListingIndexStart, seenListingI
   
             return {
               listingId,
-              value: actualRow[index] + matchCount*0.5 // Add the match count to the value
+              value: actualRow[index] + matchCount*0.1*actualRow[index] // Add the match count to the value
             }
           });
-  
           console.log("listingValuePairs here:", listingValuePairs);
+  
+          // TODELETE LATER
+          // Create an array of objects with listingId and value pairs (add the match count to the value)
+          const listingValuePairs1 = listingIds.map((listingId, index) => {
+  
+            // Find the corresponding listing in listingsWithMatchCount
+            const listingWithCount = listingsWithMatchCount.find(tuple => tuple[0]._id === listingId);
+            const matchCount = listingWithCount ? listingWithCount[1] : 0; // Get the match count or default to 0
+  
+            return {
+              listingId,
+              value: actualRow[index] // Add the match count to the value
+            }
+          });
+          console.log("listingValuePairs1 here:", listingValuePairs1);
+          ///////////////////////////////////////
+
     
           // Sort the pairs by value in descending order, then select the top pairs
           // and then extract the listing IDs from the top pairs
