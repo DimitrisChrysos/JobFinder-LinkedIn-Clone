@@ -12,9 +12,11 @@ import xml2js from "xml2js";
 const AdminHomePage = () => {
 
   const { data: session } = useSession();
+  const [user, setUser] = useState(null); //
   const [users, setUsers] = useState([-1]);
   const [error, setError] = useState(null);
   const router = useRouter();
+  const [errOccured, setErrOccured] = useState(false);
   
   // for the selected users of the table
   const [selectedUsers, setSelectedUsers] = useState([-1]);
@@ -56,6 +58,41 @@ const AdminHomePage = () => {
       <Loading />
     );
   }
+
+  const fetchProfile = async ( userId ) => { //
+    try {
+      const res = await fetch(`/api/profile/${userId}`, {cache: "no-store"});
+      if (!res.ok) {
+        throw new Error('Failed to fetch user data');
+      }
+      const data = await res.json();
+      setUser(data.user);
+      setPostCounter(data.user.post_counter);
+    } catch (error) {
+      setError(error.message);
+    }
+  };
+
+  const deleteImage = async (id, path) => { //
+    try {
+        const res = await fetch(`/api/files/${id}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ id, path }),
+        });
+  
+        if (!res.ok) {
+            throw new Error('Failed to delete file');
+        }
+  
+        const data = await res.json();
+        console.log(data.message); // "File deleted."
+    } catch (error) {
+        console.error('Error:', error.message);
+    }
+  };
   
   // handleCheckboxChange to select users
   const handleCheckboxChange = (id) => {
@@ -141,12 +178,42 @@ const AdminHomePage = () => {
   };
 
   const handleDelete = async () => {
-      for (const userId of selectedUsers) {
-
-        if (userId == -1) continue;
+    for (const userId of selectedUsers) {
+      if (userId == -1) continue;
+  
+      try {
+        // Fetch the user's profile
+        const res = await fetch(`/api/profile/${userId}`, { cache: "no-store" });
+        if (!res.ok) {
+          throw new Error("Failed to fetch user data");
+        }
+        const userData = await res.json();
         
+        // Check if the user's profile picture is not the default one
+        if (userData.user.path !== "/assets/logo_images/default-avatar-icon.jpg") {
+          await deleteImage(userData.user._id, userData.user.path);
+        }
+  
+        // Delete the user's profile
+        const deleteRes = await fetch(`/api/profile?id=${userData.user._id}`, {
+          method: "DELETE",
+        });
+  
+        if (!deleteRes.ok) {
+          alert("Failed to delete account");
+          setErrOccured(true);
+        }
+  
+      } catch (error) {
+        console.error("Error deleting user:", error.message);
       }
-  } 
+    }
+    if (!errOccured) {
+      alert("Accounts deleted successfully");
+    }
+    setErrOccured(false);
+    window.location.reload();
+  };
 
   return (
     <div className="w-full flex flex-col sm:flex-row p-2 mt-20 gap-4">
@@ -174,7 +241,7 @@ const AdminHomePage = () => {
           </div>
           <button 
             className="bg-red-400 text-white border border-red-400 mt-3 w-full font-bold py-1.5 px-5 transition-all hover:bg-white hover:text-red-400 text-center text-sm font-inter flex items-center justify-center gap-2"
-            onClick={handleXmlDownload}>
+            onClick={handleDelete}>
               <HiOutlineTrash size={24}/>
               <span>Delete selected users</span>
           </button>

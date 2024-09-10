@@ -30,7 +30,7 @@ export async function POST(req) {
 export async function GET(req) {
     try {
         await connectMongoDB(); // Connect to MongoDB
-        const users = await User.find(); // Get the users
+        const users = await User.find().populate('likedPosts').populate('commentedPosts'); // Get the users
         if (!users) {
             return NextResponse.json({message: "users not found."}, {status: 404}); // Return a 404 if users is not found
         }

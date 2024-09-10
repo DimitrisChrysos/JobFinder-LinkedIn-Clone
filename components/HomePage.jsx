@@ -24,7 +24,7 @@ const HomePage = () => {
   const [noMorePosts, setNoMorePosts] = useState(false);
   const [curPostIteration, setCurPostIteration] = useState([]);
 
-
+  
   // Redirect to admin page if the user is an admin
   if (session?.user.admin)
     redirect("/home_admin");

@@ -52,20 +52,24 @@ const getUserPosts = async (userId) => {
     }
 };
 
-const getLikesAndComments = async (user, post) => {
+const getLikesAndComments = (user, post) => {
     try {
         let likesCounter = 0;
         let commentsCounter = 0;
-        const postCreatorPosts = await getUserPosts(post.userId);
-        for (const post of postCreatorPosts) {
-            const userLiked = post.like.includes(user._id);
-            if (userLiked) {
+        const likedPosts = user.likedPosts;
+        for (const likedPost of likedPosts) {
+            if (likedPost.userId === post.userId) {
                 likesCounter++;
             }
-
-            const userComments = post.comment.filter(comment => comment.userId.toString() === user._id.toString());
-            commentsCounter += userComments.length;
         }
+
+        const commentedPosts = user.commentedPosts;
+        for (const commentedPost of commentedPosts) {
+            if (commentedPost.userId === post.userId) {
+                commentsCounter++;
+            }
+        }
+
         return { likesCounter, commentsCounter };
     } catch (error) {
         console.log("An error occurred while getting the likes:", error);
@@ -73,28 +77,11 @@ const getLikesAndComments = async (user, post) => {
     }
 };
 
-const areConnected = async (user, post) => {
+const areConnected = (user, post) => {
     try {
-        const url = new URL(`/api/connections/are-connected`, baseUrl);
-        const res = await fetch(url.toString(), {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                id1: user._id,
-                id2: post.userId
-            }),
-            agent: agent
-        });
-        if (!res.ok) {
-            throw new Error('Failed to check if users are connected');
-        }
-
-        const data = await res.json();
-        if (data.message === "connection exists")
+        if (user.connections.includes(post.userId))
             return true;
-        else if (data.message === "connection does not exist")
+        else
             return false;
     } catch (error) {
         console.log("An error occurred while checking if users are connected:", error);
@@ -102,7 +89,7 @@ const areConnected = async (user, post) => {
     }
 };
 
-const getTimePoints = async (post) => {
+const getTimePoints = (post) => {
     try {
         const now = new Date();
         const postDate = new Date(post.createdAt);
@@ -131,30 +118,16 @@ const getTimePoints = async (post) => {
     }
 };
 
-const getViews = async (postId) => {
-    try {
-        const url = new URL(`/api/post/views?postId=${postId}`, baseUrl);
-        const res = await fetch(url.toString(), { agent });
-        if (!res.ok) {
-            throw new Error('Failed to fetch views');
-        }
-        const data = await res.json();
-        return data.views;
-    } catch (error) {
-        console.log("An error occurred while getting the views:", error);
-        throw error;
-    }
+const getViews = (post) => {
+    return post.views;
 }
 
-const userHasNoLikesAndComments = async (userId) => {
+const userHasNoLikesAndComments = (user) => {
     try {
-        const url = new URL(`/api/post/user-has-no-likes-and-comments?userId=${userId}`, baseUrl);
-        const res = await fetch(url.toString(), { agent });
-        if (!res.ok) {
-            throw new Error('Failed to check if user has no likes and comments');
-        }
-        const data = await res.json();
-        return data.hasNoLikesComments;
+        if (user.likedPosts.length + user.commentedPosts.length === 0)
+            return true;
+        else
+            return false;
     } catch (error) {
         console.log("An error occurred while checking if user has no likes and comments:", error);
         throw error;        
@@ -182,35 +155,37 @@ const createMatrixR = async (n, m, users, posts) => {
         for (let i = 1 ; i <= n ; i++) {
             const user = users[i - 1];
 
-            const hasNoLikesComments = await userHasNoLikesAndComments(user._id);
+            const hasNoLikesComments = userHasNoLikesAndComments(user);
             for (let j = 1 ; j <= m ; j++) {
                 const post = posts[j - 1];
 
                 // Get if the user is connected with the creator of the post
-                const usersConnected = await areConnected(user, post);
+                const usersConnected = areConnected(user, post);
                 
                 if (hasNoLikesComments) {
                     // Get the views of the post and add them to the matrix
-                    const views = await getViews(post._id);
+                    const views = getViews(post);
                     if (usersConnected) {
-                        matrix[i][j] = 2*views;
+                        matrix[i][j] = 2*(views/100);
                     } else {
-                        matrix[i][j] = views;
+                        matrix[i][j] = (views/100);
                     }
                 } else {
                     // Get how many likes and comments a user has given to the creator of the post
-                    const { likesCounter: likes, commentsCounter: comments } = await getLikesAndComments(user, post);
-                    
+                    const { likesCounter: likes, commentsCounter: comments } = getLikesAndComments(user, post);
+                    // console.log("userId:", user._id, "likesCounter: ", likes, "commentsCounter: ", comments, "to userId:", post.userId);
+
                     // Check how resently the post was created
-                    const timePoints = await getTimePoints(post);
+                    const timePoints = getTimePoints(post);
     
                     // Fill the matrix with the ratings
                     if (usersConnected) {
                         if (likes + comments >= 1) {
                             matrix[i][j] = 5*(likes + comments);
-                        } else {
-                            matrix[i][j] = 5;
                         }
+                        // else {
+                        //     matrix[i][j] = 5;
+                        // }
                     }
                     matrix[i][j] += likes + comments + timePoints;
                     // console.log("post:", post.text, "\tuser:", user.name, "\trating", matrix[i][j], "\ti:", i, "\tj:", j);
@@ -226,7 +201,7 @@ const createMatrixR = async (n, m, users, posts) => {
 };
 
 // Matrix Factorization
-const matrixFactorization = async (R, P, Q, K, alpha, beta, steps) => {
+const matrixFactorization = (R, P, Q, K, alpha, beta, steps) => {
     try {
         // TODO: fill in the code for matrix factorization
         for (let step = 0; step < steps; step++) {
@@ -290,7 +265,7 @@ const postMatrix = async (matrix) => {
     }
 };
 
-const getFactorizedMatrix = async (R, newP, newQ, users, posts) => {
+const getFactorizedMatrix = (R, newP, newQ, users, posts) => {
     const R_hat = Array(R.length + 1).fill(0).map(() => Array(newQ[0].length + 1).fill(0));
     
     // Fill the first row with post IDs
@@ -325,7 +300,7 @@ const startMatrixFactorization = async () => {
 
         // Create the R table with users and posts
         const rTable = await createMatrixR(n, m, users, posts);
-        console.log("rTable: ", rTable);
+        // console.log("rTable: ", rTable);
         
         // Extract the actual ratings matrix without headers for matrix factorization
         const R = rTable.slice(1).map(row => row.slice(1));
@@ -341,10 +316,10 @@ const startMatrixFactorization = async () => {
         const qTable = Array(K).fill().map(() => Array(m).fill().map(() => Math.random()));
 
         // Perform matrix factorization on the R table
-        const { P: newP, Q: newQ } = await matrixFactorization(R, pTable, qTable, K, alpha, beta, steps);
+        const { P: newP, Q: newQ } = matrixFactorization(R, pTable, qTable, K, alpha, beta, steps);
         
-        const R_hat = await getFactorizedMatrix(R, newP, newQ, users, posts);
-        console.log("R_hat: ", R_hat);
+        const R_hat = getFactorizedMatrix(R, newP, newQ, users, posts);
+        // console.log("R_hat: ", R_hat);
         
         // Post the matrix to the database
         const matrix = R_hat;

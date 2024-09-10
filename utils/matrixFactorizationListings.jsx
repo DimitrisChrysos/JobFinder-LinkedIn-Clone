@@ -86,9 +86,9 @@ const createMatrixR = (n, m, users, listings) => {
                     if (views === 0)
                         matrix[i][j] = 1;
                     else
-                        matrix[i][j] = 2*views;
+                        matrix[i][j] = 2*(views/100);
                 } else {
-                    matrix[i][j] = views;
+                    matrix[i][j] = (views/100);
                 }
             }
         }
@@ -109,17 +109,8 @@ const matrixFactorization = (R, P, Q, K, alpha, beta, steps) => {
                     if (R[i][j] > 0) {
                         let eij = R[i][j] - P[i].reduce((acc, val, idx) => acc + val * Q[idx][j], 0);
                         for (let k = 0; k < K; k++) {
-                            let oldPik = P[i][k];
-                            let oldQkj = Q[k][j];
                             P[i][k] = P[i][k] + alpha * (2 * eij * Q[k][j] - beta * P[i][k]);
                             Q[k][j] = Q[k][j] + alpha * (2 * eij * P[i][k] - beta * Q[k][j]);
-                            if (eij==NaN || oldPik==NaN || oldQkj==NaN) {
-                                // pause here for 3 seconds
-                                setTimeout(() => {
-                                    console.log('Paused for 3 seconds');
-                                }, 3000);
-                            }
-                            console.log(`Step ${step}, i ${i}, j ${j}, k ${k}: eij ${eij}, P[i][k] ${oldPik} -> ${P[i][k]}, Q[k][j] ${oldQkj} -> ${Q[k][j]}`);
                         }
                     }
                 }
@@ -136,7 +127,6 @@ const matrixFactorization = (R, P, Q, K, alpha, beta, steps) => {
                     }
                 }
             }
-            console.log(`Step ${step}: error ${e}`);
             if (e < 0.001) {
                 break;
             }
@@ -209,13 +199,8 @@ const startMatrixFactorization = async () => {
 
         // Create the R table with users and listings
         const rTable = createMatrixR(n, m, users, listings);
-        console.log("rTable: ", rTable);
 
-        // TODELETE LATER!
-        // const data = await postMatrix(rTable);
-        ///////////////
-        
-        // Extract the actual ratings matrix without headers for matrix factorization
+        // // Extract the actual ratings matrix without headers for matrix factorization
         const R = rTable.slice(1).map(row => row.slice(1));
 
         // TODO: try different values for K until the best one is found
@@ -228,15 +213,10 @@ const startMatrixFactorization = async () => {
         const pTable = Array(n).fill().map(() => Array(K).fill().map(() => Math.random()));
         const qTable = Array(K).fill().map(() => Array(m).fill().map(() => Math.random()));
 
-        console.log("P: ", pTable, "Q: ", qTable);
-
         // Perform matrix factorization on the R table
         const { P: newP, Q: newQ } = matrixFactorization(R, pTable, qTable, K, alpha, beta, steps);
-        console.log("newP: ", newP, "newQ: ", newQ);
         
-
         const R_hat = getFactorizedMatrix(R, newP, newQ, users, listings);
-        // console.log("R_hat: ", R_hat);
         
         // Post the matrix to the database
         const matrix = R_hat;

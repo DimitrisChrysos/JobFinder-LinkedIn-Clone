@@ -98,14 +98,16 @@ const userSchema = new Schema({
         type: String,
         default: ""
     },
-    likedPosts: {
-        type: Array,
-        default: []
-    },
-    commentedPosts: {
-        type: Array,
-        default: []
-    },
+    // likedPosts: {
+    //     type: Array,
+    //     default: []
+    // },
+    // commentedPosts: {
+    //     type: Array,
+    //     default: []
+    // },
+    likedPosts: [{ type: Schema.Types.ObjectId, ref: 'Post' }],
+    commentedPosts: [{ type: Schema.Types.ObjectId, ref: 'Post' }],
     notifications: [notificationSchema]
 }, {timestamps: true});
 
