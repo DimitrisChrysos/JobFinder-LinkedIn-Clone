@@ -92,7 +92,7 @@ const generateRandomPosts = async (user, numPosts) => {
             views: Math.floor(Math.random() * 1000) + 1,
         }
         const newPost = await Post.create(post);
-        console.log(`Post ${newPost._id} inserted successfully`);
+        // console.log(`Post ${newPost._id} inserted successfully`);
     }
 }
 
@@ -107,7 +107,7 @@ const generateRandomListings = async (user, numListings) => {
             views: Math.floor(Math.random() * 1000) + 1,
         }
         const newListing = await Listing.create(listing);
-        console.log(`Listing ${newListing._id} inserted successfully`);
+        // console.log(`Listing ${newListing._id} inserted successfully`);
     }
 }
 
@@ -121,7 +121,7 @@ const makeRandomConnections = async (user, numConnections) => {
         await User.updateOne({ _id : user._id}, {
             $push: { connections: randomUser._id.toString() }
         })
-        console.log(`User ${user.name} ${user.surname} connected with ${randomUser.name} ${randomUser.surname}`);
+        // console.log(`User ${user.name} ${user.surname} connected with ${randomUser.name} ${randomUser.surname}`);
     }
 }
 
@@ -157,7 +157,7 @@ const likeRandomPosts = async (user, numLikes) => {
             })
         }
 
-        console.log(`User ${user.name} ${user.surname} liked post ${randomPostId} from user ${randomPost.userId}`);
+        // console.log(`User ${user.name} ${user.surname} liked post ${randomPostId} from user ${randomPost.userId}`);
     }
 }
 
@@ -193,7 +193,7 @@ const commentRandomPosts = async (user, numComments) => {
             })
         }
 
-        console.log(`User ${user.name} ${user.surname} commented on post ${randomPostId} from user ${randomPost.userId}`);
+        // console.log(`User ${user.name} ${user.surname} commented on post ${randomPostId} from user ${randomPost.userId}`);
     }
 }
             
@@ -219,7 +219,7 @@ const populateDB = async (numUsers) => {
             // Generate a random user
             const user = generateRandomUser(hashedPassword, userPosts, userListings, userSkills);
             const newUser = await User.create(user); // Save the user to the database
-            console.log(`User ${newUser.name} ${newUser.surname} inserted successfully`);
+            // console.log(`User ${newUser.name} ${newUser.surname} inserted successfully`);
 
             // Create the user's posts
             const postsPromise = generateRandomPosts(newUser, userPosts);
@@ -248,14 +248,18 @@ const populateDB = async (numUsers) => {
         // Wait for all promises to complete
         await Promise.all(promises);
         
-        console.log(`${numUsers} Users inserted successfully`);
+        // console.log(`${numUsers} Users inserted successfully`);
 
         // Close the connection
         mongoose.connection.close();
+
+        // Exit the process
+        process.exit(0);
     } catch (error) {
         console.log("An error occurred while populating the database: ", error);
+        process.exit(1);
     }
 };
 
 // Populate the database with 1 user
-populateDB(20)
+populateDB(200)

@@ -32,6 +32,6 @@ app.prepare().then(() => {
     runMatrixFactorizationPostsPeriodically();
 
     // Run the manageListingsPeriodically function every 30 minutes
-    // runMatrixFactorizationListingsPeriodically();
+    runMatrixFactorizationListingsPeriodically();
   });
 });
