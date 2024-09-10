@@ -206,6 +206,9 @@ const populateDB = async (numUsers) => {
         // Hash the password "123"    
         const hashedPassword = await bcrypt.hash("123", 10);
 
+        // Create an array to store all promises
+        const promises = [];
+
         // Create numUsers users
         for (let i = 0 ; i < numUsers; i++) {
 
@@ -227,7 +230,7 @@ const populateDB = async (numUsers) => {
             // Create the user's listings
             const listingsPromise = generateRandomListings(newUser, userListings);
 
-            const promises = [postsPromise, listingsPromise];
+            promises.push(postsPromise, listingsPromise);
 
             // Make the user connect with random users, like random posts, and comment on random posts
             // Only if the user is not one of the first 15 users
@@ -248,7 +251,7 @@ const populateDB = async (numUsers) => {
         // Wait for all promises to complete
         await Promise.all(promises);
         
-        // console.log(`${numUsers} Users inserted successfully`);
+        console.log(`${numUsers} Users Inserted Successfully`);
 
         // Close the connection
         mongoose.connection.close();
