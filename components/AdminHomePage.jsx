@@ -256,7 +256,7 @@ const AdminHomePage = () => {
             <span className="text-lg">Remove selected users</span>
           </div>
           <button 
-            className="bg-red-400 text-white border border-red-400 mt-3 w-full font-bold py-1.5 px-5 transition-all hover:bg-white hover:text-red-400 text-center text-sm font-inter flex items-center justify-center gap-2"
+            className="bg-red-500 text-white border border-red-500 mt-3 w-full font-bold py-1.5 px-5 transition-all hover:bg-white hover:text-red-500 text-center text-sm font-inter flex items-center justify-center gap-2"
             onClick={handleDelete}>
               <HiOutlineTrash size={24}/>
               <span>Press with Caution</span>

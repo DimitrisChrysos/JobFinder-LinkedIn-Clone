@@ -8,11 +8,11 @@ export async function POST(req) {
         const { matrix } = await req.json();
         await connectMongoDB(); // Connect to MongoDB
 
-        // Check if a matrix exists and delete to post a new one
-        const existingMatrix = await MatrixListings.findOne();
-        if (existingMatrix) {
-            await MatrixListings.deleteMany({});
-        }
+        // // Check if a matrix exists and delete to post a new one
+        // const existingMatrix = await MatrixListings.findOne();
+        // if (existingMatrix) {
+        //     await MatrixListings.deleteMany({});
+        // }
 
         // Create a new matrix
         await MatrixListings.create({ data: matrix });

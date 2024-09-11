@@ -246,6 +246,8 @@ const populateDB = async (numUsers) => {
             
                 promises.push(connectionsPromise, likesPromise, commentsPromise);
             }
+
+            console.log("User ", i + 1, " inserted successfully");
         }
 
         // Wait for all promises to complete
@@ -264,5 +266,5 @@ const populateDB = async (numUsers) => {
     }
 };
 
-// Populate the database with 1 user
-populateDB(200)
+// Populate the database with 1000 users
+populateDB(1000);

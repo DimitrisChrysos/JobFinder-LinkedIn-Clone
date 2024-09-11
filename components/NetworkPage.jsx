@@ -66,36 +66,35 @@ const NetworkPage = ({ userId }) => {
         </h1>
       </section>
       
-      <div className="mt-5 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 ">
-      {connections && connections.map(con => (
-        <div className="shadow-lg p-5 rounded-lg border-t-4 border-blue-400 text-xs w-40 h-52 mx-auto">
-          <div 
-            className="relative w-12 h-12 rounded-full overflow-hidden mx-auto flex items-center justify-center zoom_effect border-2 border-gray-500 p-1">
-            <Link href={`/view_profile/${con._id}`}>
-              <Image 
-                src={con?.path}
-                alt="avatar" 
-                layout="fill"
-                objectFit="cover"
-                className="absolute inset-0 w-full h-full" 
-              />
-            </Link>
+      <div className="mt-5 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+        {connections && connections.map(con => (
+          <div className="shadow-lg p-5 rounded-lg border-t-4 border-blue-400 text-xs w-40 h-52 mx-auto">
+            <div 
+              className="relative w-12 h-12 rounded-full overflow-hidden mx-auto flex items-center justify-center zoom_effect border-2 border-gray-500 p-1">
+              <Link href={`/view_profile/${con._id}`}>
+                <Image 
+                  src={con?.path}
+                  alt="avatar" 
+                  fill // updated to use `fill`
+                  className="absolute inset-0 w-full h-full object-cover" 
+                />
+              </Link>
+            </div>
+            <hr className="border-t-2 border-gray-300 w-full my-4" />
+            <div className="max-h-12 overflow-hidden text-ellipsis break-words">
+              <span className="font-bold">{con.name}</span>
+            </div>
+            <div className="max-h-12 overflow-hidden text-ellipsis break-words">
+              <span className="font-bold">{con.surname}</span>
+            </div>
+            <div className="max-h-12 overflow-hidden text-ellipsis break-words">
+              <span className="font-bold">{con.job_position}</span>
+            </div>
+            <div className="max-h-12 overflow-hidden text-ellipsis break-words">
+              <span className="font-bold">{con.employment_agency}</span>
+            </div>
           </div>
-          <hr className="border-t-2 border-gray-300 w-full my-4" />
-          <div>
-            <span className="font-bold break-words">{con.name}</span>
-          </div>
-          <div>
-            <span className="font-bold break-words">{con.surname}</span>
-          </div>
-          <div>
-            <span className="font-bold break-words">{con.job_position}</span>
-          </div>
-          <div>
-            <span className="font-bold break-words">{con.employment_agency}</span>
-          </div>
-        </div>
-      ))}
+        ))}
       </div>
       
 

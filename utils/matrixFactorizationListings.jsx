@@ -141,6 +141,26 @@ const matrixFactorization = (R, P, Q, K, alpha, beta, steps) => {
     }
 };
 
+// Delete the old matrix
+const deleteOldMatrix = async () => {
+    try {
+        const url = new URL('/api/matrix-factorization-listings/remove-all-chunks', baseUrl);
+        const res = await fetch(url.toString(), {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            agent: agent
+        });
+        if (!res.ok) {
+            throw new Error('Failed to delete the old matrix');
+        }
+    } catch (error) {
+        console.log("An error occurred while deleting the old matrix:", error);
+        throw error;
+    }
+}
+
 const getFactorizedMatrix = (R, newP, newQ, users, listings) => {
     const R_hat = Array(R.length + 1).fill(0).map(() => Array(newQ[0].length + 1).fill(0));
     
@@ -271,5 +291,6 @@ module.exports = {
     matrixFactorization,
     createMatrixR,
     getFactorizedMatrix,
-    postMatrix
+    postMatrix,
+    deleteOldMatrix
 };

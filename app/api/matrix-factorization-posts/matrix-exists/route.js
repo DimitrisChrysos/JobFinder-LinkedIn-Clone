@@ -8,11 +8,19 @@ export async function GET(req) {
     try {
         await connectMongoDB(); // Connect to MongoDB
         
-        const existingMatrix = await MatrixPosts.findOne();
+        const existingMatrix = await MatrixPosts.find();
         if (existingMatrix) {
+
+            // Get all the chunks of the matrix
+            const matrixChunks = existingMatrix;
+
+            // Reconstruct the matrix from the chunks
+            console.log("matrixChunks: ", matrixChunks);
+            const reconstructedMatrix = matrixChunks.reduce((acc, chunk) => acc.concat(chunk), []);
+
             return NextResponse.json({
                 message: "Matrix exists",
-                data: existingMatrix.data,
+                data: reconstructedMatrix,
                 error: false
             });
         }

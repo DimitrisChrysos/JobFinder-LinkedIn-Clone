@@ -1,6 +1,6 @@
 // matrixFactorizationListingWorker.js
 const { parentPort } = require('worker_threads');
-const { matrixFactorization, createMatrixR, getFactorizedMatrix, postMatrix } = require('./matrixFactorizationListings.jsx');
+const { matrixFactorization, createMatrixR, getFactorizedMatrix, postMatrix, deleteOldMatrix } = require('./matrixFactorizationListings.jsx');
 
 parentPort.on('message', async ({ users, listings }) => {
     try {
@@ -29,7 +29,68 @@ parentPort.on('message', async ({ users, listings }) => {
 
     // Post the matrix to the database
     const matrix = R_hat;
-    await postMatrix(matrix);
+
+    // // DELETE THIS LATER:
+    // const matrixJson = JSON.stringify(matrix);
+    // const matrixSizeInBytes = Buffer.byteLength(matrixJson, 'utf8');
+    // const matrixSizeInMB = matrixSizeInBytes / (1024 * 1024);
+    // if (matrixSizeInMB > 16) {
+    //   throw new Error('Matrix is too large to post to mongoDB');
+    // }
+    // //////////////////////////////////////////
+
+    const splitMatrix = (matrix, rowsPerChunk) => {
+      const chunks = [];
+      for (let i = 0; i < matrix.length; i += rowsPerChunk) {
+        const chunk = matrix.slice(i, i + rowsPerChunk).map(row => row.slice());
+        chunks.push(chunk);
+      }
+      return chunks;
+    };
+
+    // Define the chunk size
+    const CHUNK_SIZE = 1000000;
+
+    const matrixJson = JSON.stringify(matrix);
+    const matrixSizeInBytes = Buffer.byteLength(matrixJson, 'utf8');
+    const matrixSizeInMB = matrixSizeInBytes / (1024 * 1024);
+    console.log("matrixSizeInMB: ", matrixSizeInMB);
+
+    // Check the size of row[0] of the matrix
+    const rowZeroJson = JSON.stringify(matrix[0]);
+    const rowZeroSizeInBytes = Buffer.byteLength(rowZeroJson, 'utf8');
+    const rowZeroSizeInMB = rowZeroSizeInBytes / (1024 * 1024);
+    console.log("rowZeroSizeInMB: ", rowZeroSizeInMB);
+
+    // Total rows of the matrix
+    const rows = matrix.length;
+
+    // Get the number of rows per chunk
+    const rowsPerChunk = Math.floor(CHUNK_SIZE / rowZeroSizeInBytes);
+
+    // Split the matrix into chunks
+    const matrixChunks = splitMatrix(matrix, rowsPerChunk);
+
+    // Get the chunks needed to post the matrix
+    const chunksNeeded = Math.ceil(rows / rowsPerChunk);
+
+    console.log("rows: ", rows, "rowsPerChunk: ", rowsPerChunk, "matrixChunksCounter: ", matrixChunks.length, "chunksNeeded: ", chunksNeeded);
+
+    // Post each chunk to the database
+    await deleteOldMatrix();
+    for (const chunk of matrixChunks) {
+
+      // Check If the chunk is too large to post to mongoDB
+      const chunkJson = JSON.stringify(chunk);
+      const chunkSizeInBytes = Buffer.byteLength(chunkJson, 'utf8');
+      const chunkSizeInMB = chunkSizeInBytes / (1024 * 1024);
+      console.log("chunkSizeInMB: ", chunkSizeInMB);
+      if (chunkSizeInMB > 16) {
+        throw new Error('Chunk is too large to post to mongoDB');
+      }
+
+      await postMatrix(chunk);
+    }
 
     parentPort.postMessage({ success: true });
   } catch (error) {

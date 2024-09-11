@@ -174,7 +174,6 @@ const createMatrixR = (n, m, users, posts) => {
                 } else {
                     // Get how many likes and comments a user has given to the creator of the post
                     const { likesCounter: likes, commentsCounter: comments } = getLikesAndComments(user, post);
-                    // console.log("userId:", user._id, "likesCounter: ", likes, "commentsCounter: ", comments, "to userId:", post.userId);
 
                     // Check how recently the post was created
                     // const timePoints = getTimePoints(post);
@@ -266,6 +265,26 @@ const postMatrix = async (matrix) => {
     }
 };
 
+// Delete the old matrix
+const deleteOldMatrix = async () => {
+    try {
+        const url = new URL('/api/matrix-factorization-posts/remove-all-chunks', baseUrl);
+        const res = await fetch(url.toString(), {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            agent: agent
+        });
+        if (!res.ok) {
+            throw new Error('Failed to delete the old matrix');
+        }
+    } catch (error) {
+        console.log("An error occurred while deleting the old matrix:", error);
+        throw error;
+    }
+}
+
 const getFactorizedMatrix = (R, newP, newQ, users, posts) => {
     const R_hat = Array(R.length + 1).fill(0).map(() => Array(newQ[0].length + 1).fill(0));
     
@@ -288,57 +307,6 @@ const getFactorizedMatrix = (R, newP, newQ, users, posts) => {
 
     return R_hat;
 };
-
-// Start matrix factorization
-const startMatrixFactorizationOld = async () => {
-    try {
-        // Get the users and posts
-        const [users, posts] = await Promise.all([getUsers(), getPosts()]);
-        console.log("\n\nGot users and posts\n\n");
-
-        // Get the table dimensions
-        const n = users.length;
-        const m = posts.length;
-
-        // Create the R table with users and posts
-        const rTable = await createMatrixR(n, m, users, posts);
-        console.log("\n\nCreated the R starting table\n\n");
-        // console.log("rTable: ", rTable);
-        
-        // Extract the actual ratings matrix without headers for matrix factorization
-        const R = rTable.slice(1).map(row => row.slice(1));
-
-        // TODO: try different values for K until the best one is found
-        const K = 2; // Set the number of latent features K
-        const alpha = 0.0002; // Set the learning rate alpha
-        const beta = 0.002; // Set the regularization parameter beta
-        const steps = 1000; // Set the number of iterations
-
-        // Create the P(n*K) and Q(K*m) matrices
-        const pTable = Array(n).fill().map(() => Array(K).fill().map(() => Math.random()));
-        const qTable = Array(K).fill().map(() => Array(m).fill().map(() => Math.random()));
-
-        // Perform matrix factorization on the R table
-        const { P: newP, Q: newQ } = await matrixFactorization(R, pTable, qTable, K, alpha, beta, steps);
-        console.log("\n\nPerformed matrix factorization\n\n");        
-        
-        const R_hat = getFactorizedMatrix(R, newP, newQ, users, posts);
-        console.log("\n\nCreated the R finish table\n\n")
-        // console.log("R_hat: ", R_hat);
-        
-        // Post the matrix to the database
-        const matrix = R_hat;
-        postMatrix(matrix).then(data => {
-            console.log('\n\nMatrix factorization completed:', data, "\n\n");
-        }).catch(error => {
-            console.error('Error during matrix factorization:', error);
-        });
-    } catch (error) {
-        console.log("An error occurred while starting matrix factorization:", error);
-        throw error;
-    }
-};
-
 
 // Start matrix factorization
 const startMatrixFactorization = async () => {
@@ -371,7 +339,6 @@ const startMatrixFactorization = async () => {
     }
 };
 
-
 // Function to run MatrixFactorization every 30 minutes
 async function runMatrixFactorizationPostsPeriodically() {
     
@@ -387,5 +354,6 @@ module.exports = {
     matrixFactorization,
     createMatrixR,
     getFactorizedMatrix,
-    postMatrix
+    postMatrix,
+    deleteOldMatrix
 };
