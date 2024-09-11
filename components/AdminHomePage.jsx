@@ -5,7 +5,7 @@ import { useSession } from 'next-auth/react';
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { HiDownload, HiOutlineDownload, HiOutlineTrash } from "react-icons/hi";
+import { HiDownload, HiOutlineDownload, HiOutlineExclamation, HiOutlineTrash } from "react-icons/hi";
 import Loading from "./Loading";
 import xml2js from "xml2js";
 
@@ -19,7 +19,7 @@ const AdminHomePage = () => {
   const [errOccured, setErrOccured] = useState(false);
   
   // for the selected users of the table
-  const [selectedUsers, setSelectedUsers] = useState([-1]);
+  const [selectedUsers, setSelectedUsers] = useState([]);
 
   // secure the page
   if (session) {
@@ -178,6 +178,18 @@ const AdminHomePage = () => {
   };
 
   const handleDelete = async () => {
+
+    if (selectedUsers.length === 0) {
+      alert("No users selected");
+      return;
+    }
+
+    const confirmDelete = confirm(`Are you sure you want to delete the selected accounts?`);
+
+    if (!confirmDelete) {
+      return;
+    }
+
     for (const userId of selectedUsers) {
       if (userId == -1) continue;
   
@@ -219,7 +231,7 @@ const AdminHomePage = () => {
     <div className="w-full flex flex-col sm:flex-row p-2 mt-20 gap-4">
 
 
-      {/* Download data of users */}
+      {/* Download data of users or Delete users */}
       <div className="mt-20">
         <div className="shadow-lg p-5 rounded-lg border-t-4 border-blue-400 sticky top-20">
           <div className="flex justify-center items-center mt-3 space-x-2">
@@ -239,11 +251,16 @@ const AdminHomePage = () => {
                 <span>JSON</span>
             </button>
           </div>
+          <hr className="my-4 border-t border-gray-300"/>
+          <div className="flex justify-center items-center space-x-2">
+            <span className="text-lg">Remove selected users</span>
+          </div>
           <button 
             className="bg-red-400 text-white border border-red-400 mt-3 w-full font-bold py-1.5 px-5 transition-all hover:bg-white hover:text-red-400 text-center text-sm font-inter flex items-center justify-center gap-2"
             onClick={handleDelete}>
               <HiOutlineTrash size={24}/>
-              <span>Delete selected users</span>
+              <span>Press with Caution</span>
+              {/* <HiOutlineExclamation size={24}/> */}
           </button>
         </div>
       </div>
