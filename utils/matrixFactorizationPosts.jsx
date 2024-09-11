@@ -1,3 +1,4 @@
+const { Worker } = require('worker_threads');
 const fetch = require('node-fetch');
 const agent = require('../httpsAgent'); // Import the HTTPS agent
 
@@ -135,7 +136,7 @@ const userHasNoLikesAndComments = (user) => {
 
 }
 
-const createMatrixR = async (n, m, users, posts) => {
+const createMatrixR = (n, m, users, posts) => {
 
     try {
         // Create a matrix with n rows and m columns
@@ -166,7 +167,7 @@ const createMatrixR = async (n, m, users, posts) => {
                     // Get the views of the post and add them to the matrix
                     const views = getViews(post);
                     if (usersConnected) {
-                        matrix[i][j] = 2*(views/100);
+                        matrix[i][j] = 5*(views/100);
                     } else {
                         matrix[i][j] = (views/100);
                     }
@@ -175,19 +176,19 @@ const createMatrixR = async (n, m, users, posts) => {
                     const { likesCounter: likes, commentsCounter: comments } = getLikesAndComments(user, post);
                     // console.log("userId:", user._id, "likesCounter: ", likes, "commentsCounter: ", comments, "to userId:", post.userId);
 
-                    // Check how resently the post was created
-                    const timePoints = getTimePoints(post);
+                    // Check how recently the post was created
+                    // const timePoints = getTimePoints(post);
     
                     // Fill the matrix with the ratings
                     if (usersConnected) {
                         if (likes + comments >= 1) {
-                            matrix[i][j] = 5*(likes + comments);
+                            matrix[i][j] = 25*(likes + comments);
                         }
-                        // else {
-                        //     matrix[i][j] = 5;
-                        // }
+                        else {
+                            matrix[i][j] = 5;
+                        }
                     }
-                    matrix[i][j] += likes + comments + timePoints;
+                    matrix[i][j] += 5*(likes + comments); // + timePoints;
                     // console.log("post:", post.text, "\tuser:", user.name, "\trating", matrix[i][j], "\ti:", i, "\tj:", j);
                 }
             }
@@ -289,10 +290,11 @@ const getFactorizedMatrix = (R, newP, newQ, users, posts) => {
 };
 
 // Start matrix factorization
-const startMatrixFactorization = async () => {
+const startMatrixFactorizationOld = async () => {
     try {
         // Get the users and posts
         const [users, posts] = await Promise.all([getUsers(), getPosts()]);
+        console.log("\n\nGot users and posts\n\n");
 
         // Get the table dimensions
         const n = users.length;
@@ -300,6 +302,7 @@ const startMatrixFactorization = async () => {
 
         // Create the R table with users and posts
         const rTable = await createMatrixR(n, m, users, posts);
+        console.log("\n\nCreated the R starting table\n\n");
         // console.log("rTable: ", rTable);
         
         // Extract the actual ratings matrix without headers for matrix factorization
@@ -316,30 +319,73 @@ const startMatrixFactorization = async () => {
         const qTable = Array(K).fill().map(() => Array(m).fill().map(() => Math.random()));
 
         // Perform matrix factorization on the R table
-        const { P: newP, Q: newQ } = matrixFactorization(R, pTable, qTable, K, alpha, beta, steps);
+        const { P: newP, Q: newQ } = await matrixFactorization(R, pTable, qTable, K, alpha, beta, steps);
+        console.log("\n\nPerformed matrix factorization\n\n");        
         
         const R_hat = getFactorizedMatrix(R, newP, newQ, users, posts);
+        console.log("\n\nCreated the R finish table\n\n")
         // console.log("R_hat: ", R_hat);
         
         // Post the matrix to the database
         const matrix = R_hat;
-        const data = await postMatrix(matrix);
+        postMatrix(matrix).then(data => {
+            console.log('\n\nMatrix factorization completed:', data, "\n\n");
+        }).catch(error => {
+            console.error('Error during matrix factorization:', error);
+        });
     } catch (error) {
         console.log("An error occurred while starting matrix factorization:", error);
         throw error;
     }
 };
 
+
+// Start matrix factorization
+const startMatrixFactorization = async () => {
+    try {
+        const [users, posts] = await Promise.all([getUsers(), getPosts()]);
+
+        const worker = new Worker('./utils/matrixFactorizationPostWorker.js');
+        worker.postMessage({ users, posts });
+
+        worker.on('message', (message) => {
+            if (message.success) {
+                console.log('Matrix factorization completed');
+            } else {
+                console.error('Error during matrix factorization:', message.error);
+            }
+        });
+
+        worker.on('error', (error) => {
+            console.error('Worker error:', error);
+        });
+
+        worker.on('exit', (code) => {
+            if (code !== 0) {
+                console.error(`Worker stopped with exit code ${code}`);
+            }
+        });
+    } catch (error) {
+        console.log("An error occurred while starting matrix factorization:", error);
+        throw error;
+    }
+};
+
+
 // Function to run MatrixFactorization every 30 minutes
 async function runMatrixFactorizationPostsPeriodically() {
     
     console.log("Running the Matrix Factorization, this process repeats every 30 minutes\n")
-    await startMatrixFactorization(); // Run immediately on start
+    startMatrixFactorization(); // Run immediately on start
     setInterval(async () => {
-        await startMatrixFactorization();
+        startMatrixFactorization();
     }, 30 * 60 * 1000); // 30 minutes in milliseconds
 }
 
 module.exports = {
-    runMatrixFactorizationPostsPeriodically
+    runMatrixFactorizationPostsPeriodically,
+    matrixFactorization,
+    createMatrixR,
+    getFactorizedMatrix,
+    postMatrix
 };

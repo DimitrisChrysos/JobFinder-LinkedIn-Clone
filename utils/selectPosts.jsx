@@ -4,12 +4,10 @@ export async function selectPosts(userId, seenPostIndexStart, seenPostIndexEnd) 
   try {
     const matrix = await getMatrixPosts();
     if (matrix) {
-      console.log("matrix here:", matrix);
       
       // Find the row corresponding to the user
       const userRow = matrix.find(row => row[0] === userId);
 
-      console.log("userRow here:", userRow);
       if (userRow) {
         const actualRow = userRow.slice(1); // Remove the userId from the row
         const postIds = matrix[0].slice(1); // Extract the post IDs from the first row
@@ -44,7 +42,6 @@ export async function selectPosts(userId, seenPostIndexStart, seenPostIndexEnd) 
             throw new Error('Failed to fetch posts');
         }
         const data = await res.json();
-        console.log("how many posts?", data.posts.length);
         return data.posts;
       }
     }
