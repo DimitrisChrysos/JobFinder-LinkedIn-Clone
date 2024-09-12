@@ -16,7 +16,10 @@ export async function GET(req, {params}) {
         const firstChunk = await MatrixListings.findOne().sort({ createdAt: 1 }).limit(1);
         
         if (!firstChunk) {
-            return new Response('First chunk not found', { status: 404 });
+            return NextResponse.json({
+                message: "Fist chunk not found",
+                error: false
+            });
         }
 
         // Find the first row of the first chunk

@@ -10,6 +10,9 @@ const getUserRow = async (userId) => {
     if (data.message == "User row not found") {
       return null;
     }
+    else if (data.message == "Fist chunk not found") {
+      return null;
+    }
     else if (data.message == "User row found") {
       const userRow = data.userRow;
       const firstRow = data.firstRowOfFirstChunk;
@@ -29,12 +32,12 @@ export async function selectListings(userId, seenListingIndexStart, seenListingI
 
       // Find the row corresponding to the user within the chunk
       const dataUser = await getUserRow(userId);
-      const userRow = dataUser.userRow;
-      const firstRow = dataUser.firstRow;
+      const userRow = dataUser ? dataUser.userRow : null;
+      const firstRow = dataUser ? dataUser.firstRow : null;
 
       const listingsWithMatchCount = await geSkillsToDescriptionMatch(userId);
-        
-        
+
+      // If the userRow exists, use the matrix factorization to select the listings
       if (userRow) {
         const actualRow = userRow.slice(1); // Remove the userId from the row
         const listingIds = firstRow.slice(1); // Extract the listing IDs from the first row
@@ -81,7 +84,7 @@ export async function selectListings(userId, seenListingIndexStart, seenListingI
         return data.listings;
       }
 
-      // Select the listings with the most views
+      // Else if userRow doesn't exist, select the listings with the most views
       const res = await fetch('/api/listing/get-all-listings');
       if (!res.ok) {
           throw new Error('Failed to fetch listings');

@@ -3,7 +3,7 @@ import Chat from "@models/chat";
 import User from "@models/user";
 import { NextResponse } from "next/server";
 
-// This function checks if a chat exists in the database and is called when a POST request is made to /api/chat/chat-exists
+// This function checks if a chat exists in the database
 export async function GET(req) {
     try {
         const { searchParams } = new URL(req.url);

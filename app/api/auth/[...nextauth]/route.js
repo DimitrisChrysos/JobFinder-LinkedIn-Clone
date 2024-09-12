@@ -50,9 +50,6 @@ export const authOptions = {
             if (user) {
                 token.id = user.id;
                 token.admin = user.admin
-                // console.log("JWT callback - user added to token:", token);
-            } else {
-                // console.log("JWT callback - existing token:", token);
             }
             return token;
         },
@@ -61,7 +58,6 @@ export const authOptions = {
             if (token) {
                 session.user.id = token.id;
                 session.user.admin = token.admin;
-                // console.log("Session callback - session updated:", session);
             }
             return session;
         },

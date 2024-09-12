@@ -6,9 +6,7 @@ import { NextResponse } from "next/server";
 export async function PUT(req, {params}) {
     try {
         const { id } = params;
-        const {
-            newChatId: lastChatId
-        } = await req.json();
+        const { newChatId: lastChatId } = await req.json();
         await connectMongoDB();
         await User.findByIdAndUpdate(id, {lastChatId});
         const user = await User.findOne({ _id : id });

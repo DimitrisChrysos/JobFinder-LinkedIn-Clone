@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import connectMongoDB from "@lib/mongodb";
 import Chat from '@models/chat';
 
-// add a message to a chat in the database
+// Add a message to a chat in the database
 export async function POST(req) {
     try {
         const { chatId, senderId, receiverId, content } = await req.json();
@@ -16,10 +16,6 @@ export async function POST(req) {
 
         // Get all the messages of the chat
         const chatMessages = await Chat.find({ _id: chatId }).populate({
-            // path: 'message',
-            // populate: {
-            //     path: 'senderId'
-            // }
             path: 'message.senderId message.receiverId',
             select: '_id name path', // Select fields to populate
         });
@@ -46,10 +42,6 @@ export async function GET(req) {
 
         // Get all the messages of the chat
         const chatMessages = await Chat.find({ _id: chatId }).populate({
-            // path: 'message',
-            // populate: {
-            //     path: 'senderId'
-            // }
             path: 'message.senderId message.receiverId',
             select: '_id name path', // Select fields to populate
         });
