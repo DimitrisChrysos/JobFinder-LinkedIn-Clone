@@ -6,7 +6,6 @@ import Listing from "@models/listing";
 export async function PUT(req) {
     try {
         const { listingIds } = await req.json();
-        console.log("listingIds here:", listingIds);
         if (listingIds.length === 0) {
             return NextResponse.json({ message: "No listingIds provided." }, { status: 400 });
         }

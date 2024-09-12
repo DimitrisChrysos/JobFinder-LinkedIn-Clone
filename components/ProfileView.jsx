@@ -22,7 +22,6 @@ const ProfileView = ({ userId }) => {
     const router = useRouter();
     const [isButtonDisabled, setIsButtonDisabled] = useState(false);
     const [publicInfo, setPublicInfo] = useState([-1]);
-    const [connectedUsers, setConnectedUsers] = useState(false);
 
     // disable the button for 3 seconds to prevent errors
     const disableButton = async () => {
@@ -54,7 +53,6 @@ const ProfileView = ({ userId }) => {
             else if (data.message === 'request does not exist') {
                 setReqExists(data.message);
             }
-            console.log("msg: ", data.message);
         } catch (error) {
             console.log(error);
         }
@@ -93,7 +91,6 @@ const ProfileView = ({ userId }) => {
                     throw new Error('Failed to fetch user data');
                 }
                 const data = await res.json();
-                // console.log(data.user);
                 setUser(data.user);
             } catch (error) {
                 setError(error.message);
@@ -152,9 +149,7 @@ const ProfileView = ({ userId }) => {
             checkRequestExists();
             getPublicInfo();
         }
-    }, [userId]);   // Dependency array with userId to re-run if userId changes
-
-    console.log("userId: ", userId, "session?.user.id: ", session?.user.id);
+    }, [userId]);
 
     if (error) {
         return <div>Error: {error}</div>;
@@ -236,7 +231,6 @@ const ProfileView = ({ userId }) => {
 
     // Update the last chat id of the users
     const updateUsersLastChat = async (chatId) => {
-        // console.log(chatId);
         const res = await fetch(`/api/chats/update-last-chat/${user._id}`, {
             method: 'PUT',
             headers: {
@@ -478,7 +472,7 @@ const ProfileView = ({ userId }) => {
                         {posts.length ? posts
                         .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)) // Sort posts by date (latest first)
                         .map(p => (
-                            <PostCard p={p} curUser={curUser}/>    // Mh to peirakseis // key={p._id} //
+                            <PostCard p={p} curUser={curUser}/>
                         )) : (
                             <>
                                 { user._id == curUser._id ? (

@@ -24,7 +24,7 @@ const Conversations = () => {
   if (!user) {
     return (
       <Loading />
-  );
+    );
   }
 
   return (

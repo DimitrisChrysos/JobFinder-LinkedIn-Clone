@@ -35,8 +35,6 @@ const ListingCard = ({p, curUser}) => {
 
     const handleApplicationListing = async () => {
 
-        // e.preventDefault();
-
         if (description) {
             const res = await fetch('/api/listing/application', {
                 method: 'POST',
@@ -78,9 +76,6 @@ const ListingCard = ({p, curUser}) => {
     const handleOpenCloseApplication = () => {
         setOpenApplications(previous => !previous);
     }
-
-    // const currentUserLiked = likeData.includes(session?.user.id);
-
 
     // Function to handle the text change event on post comment
     const handleTextChange = (e) => {
@@ -146,8 +141,6 @@ const ListingCard = ({p, curUser}) => {
                             <span className="text-sm text-gray-700">{p.description}</span>
                         </div>
                     </div>
-
-                    {/* <hr className="my-4 border-t border-gray-300 w-2/5 mx-auto" /> */}
                 </div>
             )}
 

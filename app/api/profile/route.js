@@ -8,10 +8,10 @@ import { promises as fs } from 'fs';
 import { join } from "path";
 import Chat from "@models/chat";
 
-// This function creates a user to the database and is called when a POST request is made to /api/profile
+// This function creates a user to the database
 export async function POST(req) {
     try {
-        const {admin, name, surname, email, phone_number, password, path, post_counter, listing_counter} = await req.json();   // Get the name, surname, email, password and path from the request body
+        const {admin, name, surname, email, phone_number, password, path, post_counter, listing_counter} = await req.json(); // Get the user data from the request body
         const hashedPassword = await bcrypt.hash(password, 10); // Hash the password
 
         await connectMongoDB(); // Connect to MongoDB
@@ -22,11 +22,11 @@ export async function POST(req) {
             user: newUser
         }, {status: 201}); // Return a success message
     } catch (error) {
-        return NextResponse.json({message: "An error occurred while registering the user."}, {status: 500});    // Return an error message
+        return NextResponse.json({message: "An error occurred while registering the user."}, {status: 500}); // Return an error message
     }
 }
 
-// This function returns all the users in the database and is called when a GET request is made to /api/profile
+// This function returns all the users from the database
 export async function GET(req) {
     try {
         await connectMongoDB(); // Connect to MongoDB
@@ -36,7 +36,7 @@ export async function GET(req) {
         }
         return NextResponse.json({users}); // Return the users
     } catch (error) {
-        return NextResponse.json({message: "An error occurred while fetching users."}, {status: 500});    // Return an error message
+        return NextResponse.json({message: "An error occurred while fetching users."}, {status: 500}); // Return an error message
     }
 }
 
@@ -54,8 +54,6 @@ export async function DELETE(req) {
 
         // Step 1: Find and delete all the chats of the user
         const chats = user.chats; // Get all chats of this user
-        // console.log("user to delete: ", user);
-        // console.log("chats: ", chats);
         for (const chatId of chats) {
             const chat = await Chat.findById(chatId); // Get the chat with this id
             if (!chat) {
@@ -64,7 +62,6 @@ export async function DELETE(req) {
             }
             
             // Remove the chat from the two users' chat arrays
-            // console.log("chat.participants: ", chat.participants);
             for (const participantId of chat.participants) {
                 try {
                     const user = await User.findById(participantId);
@@ -81,7 +78,6 @@ export async function DELETE(req) {
 
             await Chat.findByIdAndDelete(chatId); // Delete the chat with this id
         }
-        
 
         // Step 2: Find and delete all posts associated with this user
         const posts = await Post.find({ userId: id }); // Get all posts by this user

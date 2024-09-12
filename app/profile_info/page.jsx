@@ -9,8 +9,6 @@ import Loading from "@components/Loading";
 
 const ProfileInfo = () => {
 
-
-  // State variables to store the error message, user data and session data
   const { data: session } = useSession();
   const [error, setError] = useState("");
   const [user, setUser] = useState(null);
@@ -34,7 +32,7 @@ const ProfileInfo = () => {
     if (session?.user.id) {
       fetchProfile();
     }
-  }, [session?.user.id]);   // Dependency array with userId to re-run if userId changes
+  }, [session?.user.id]);
   
   if (!user) {
     return (

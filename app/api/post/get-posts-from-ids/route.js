@@ -16,11 +16,11 @@ export async function POST(req) {
         // Create a map of posts for quick lookup
         const postMap = new Map(posts.map(post => [post._id.toString(), post]));
 
-        // Sort the posts based on the order of the ids array
-        const sortedPosts = ids.map(id => postMap.get(id)).filter(post => post !== undefined);
+        // Filter the posts based on the ids existance
+        const filteredPosts = ids.map(id => postMap.get(id)).filter(post => post !== undefined);
 
-        return NextResponse.json({posts: sortedPosts }); // Return the posts
+        return NextResponse.json({posts: filteredPosts }); // Return the posts
     } catch (error) {
-        return NextResponse.json({message: "An error occurred while fetching the posts."}, {status: 500});    // Return an error message
+        return NextResponse.json({message: "An error occurred while fetching the posts."}, {status: 500}); // Return an error message
     }
 }

@@ -37,22 +37,7 @@ const getPosts = async () => {
     }
 };
 
-const getUserPosts = async (userId) => {
-    try {
-        const url = new URL(`/api/post?id=${userId}`, baseUrl);
-        const res = await fetch(url.toString(), { agent });
-        if (!res.ok) {
-            throw new Error('Failed to fetch user posts');
-        }
-        const data = await res.json();
-        const posts = data.posts;
-        return posts;
-    } catch (error) {
-        console.log("An error occurred while fetching user posts:", error);
-        throw error;
-    }
-};
-
+// Get the number of likes and comments a user has given to the creator of a post
 const getLikesAndComments = (user, post) => {
     try {
         let likesCounter = 0;
@@ -78,6 +63,7 @@ const getLikesAndComments = (user, post) => {
     }
 };
 
+// Check if the user and the creator of the post are connected
 const areConnected = (user, post) => {
     try {
         if (user.connections.includes(post.userId))
@@ -90,39 +76,12 @@ const areConnected = (user, post) => {
     }
 };
 
-const getTimePoints = (post) => {
-    try {
-        const now = new Date();
-        const postDate = new Date(post.createdAt);
-        const timeDifference = now - postDate; // Difference in milliseconds
-
-        let points = 0;
-
-        const oneHour = 60 * 60 * 1000; // milliseconds in an hour
-        const oneDay = 24 * oneHour; // milliseconds in a day
-        const oneWeek = 7 * oneDay; // milliseconds in a week
-
-        if (timeDifference <= oneHour) {
-            points = 1; // Highest points for posts created within the last hour
-        } else if (timeDifference <= oneDay) {
-            points = 0.5; // Points for posts created within the last day
-        } else if (timeDifference <= oneWeek) {
-            points = 0.2; // Points for posts created within the last week
-        } else {
-            points = 0.1; // Least points for posts created more than a week ago
-        }
-
-        return points;
-    } catch (error) {
-        console.log("An error occurred while calculating time points:", error);
-        throw error;
-    }
-};
-
+// Get the views of a post
 const getViews = (post) => {
     return post.views;
 }
 
+// Check if the user has no likes and comments
 const userHasNoLikesAndComments = (user) => {
     try {
         if (user.likedPosts.length + user.commentedPosts.length === 0)
@@ -133,9 +92,9 @@ const userHasNoLikesAndComments = (user) => {
         console.log("An error occurred while checking if user has no likes and comments:", error);
         throw error;        
     }
-
 }
 
+// Create the starting matrix R
 const createMatrixR = (n, m, users, posts) => {
 
     try {
@@ -174,9 +133,6 @@ const createMatrixR = (n, m, users, posts) => {
                 } else {
                     // Get how many likes and comments a user has given to the creator of the post
                     const { likesCounter: likes, commentsCounter: comments } = getLikesAndComments(user, post);
-
-                    // Check how recently the post was created
-                    // const timePoints = getTimePoints(post);
     
                     // Fill the matrix with the ratings
                     if (usersConnected) {
@@ -187,8 +143,7 @@ const createMatrixR = (n, m, users, posts) => {
                             matrix[i][j] = 5;
                         }
                     }
-                    matrix[i][j] += 5*(likes + comments); // + timePoints;
-                    // console.log("post:", post.text, "\tuser:", user.name, "\trating", matrix[i][j], "\ti:", i, "\tj:", j);
+                    matrix[i][j] += 5*(likes + comments);
                 }
             }
         }
@@ -203,7 +158,6 @@ const createMatrixR = (n, m, users, posts) => {
 // Matrix Factorization
 const matrixFactorization = (R, P, Q, K, alpha, beta, steps) => {
     try {
-        // TODO: fill in the code for matrix factorization
         for (let step = 0; step < steps; step++) {
             for (let i = 0; i < R.length; i++) {
                 for (let j = 0; j < R[i].length; j++) {
@@ -285,6 +239,7 @@ const deleteOldMatrix = async () => {
     }
 }
 
+// Get the factorized matrix from the factorized P and Q matrices
 const getFactorizedMatrix = (R, newP, newQ, users, posts) => {
     const R_hat = Array(R.length + 1).fill(0).map(() => Array(newQ[0].length + 1).fill(0));
     

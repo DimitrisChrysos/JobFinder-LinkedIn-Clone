@@ -27,6 +27,7 @@ export async function POST(req, {params}) {
     return NextResponse.json({ success: true });
 }
 
+// This route is used to delete a file from the server
 export async function DELETE(req) {
     try {
         const { id, path } = await req.json();

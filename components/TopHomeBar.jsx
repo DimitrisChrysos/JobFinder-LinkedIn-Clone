@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { HiOutlineBell, HiOutlineBriefcase, HiOutlineChat, HiOutlineCog, HiOutlinePhotograph, HiOutlineThumbUp, HiOutlineUpload, HiOutlineUserCircle, HiX } from "react-icons/hi";
+import { HiOutlineBell, HiOutlineBriefcase, HiOutlineChat, HiOutlineCog, HiOutlineUserCircle } from "react-icons/hi";
 import { HiOutlineUserGroup } from "react-icons/hi";
 import { HiOutlineHome } from "react-icons/hi";
 

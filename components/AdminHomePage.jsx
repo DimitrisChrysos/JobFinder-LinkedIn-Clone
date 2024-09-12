@@ -5,14 +5,14 @@ import { useSession } from 'next-auth/react';
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { HiDownload, HiOutlineDownload, HiOutlineExclamation, HiOutlineTrash } from "react-icons/hi";
+import { HiDownload, HiOutlineTrash } from "react-icons/hi";
 import Loading from "./Loading";
 import xml2js from "xml2js";
 
 const AdminHomePage = () => {
 
   const { data: session } = useSession();
-  const [user, setUser] = useState(null); //
+  const [user, setUser] = useState(null);
   const [users, setUsers] = useState([-1]);
   const [error, setError] = useState(null);
   const router = useRouter();
@@ -45,7 +45,7 @@ const AdminHomePage = () => {
 
       if(session?.user.id) 
         fetchProfiles();
-  }, [session?.user.id]);   // Dependency array with userId to re-run if userId changes
+  }, [session?.user.id]);
 
   if (error) {
     return (
@@ -59,21 +59,8 @@ const AdminHomePage = () => {
     );
   }
 
-  const fetchProfile = async ( userId ) => { //
-    try {
-      const res = await fetch(`/api/profile/${userId}`, {cache: "no-store"});
-      if (!res.ok) {
-        throw new Error('Failed to fetch user data');
-      }
-      const data = await res.json();
-      setUser(data.user);
-      setPostCounter(data.user.post_counter);
-    } catch (error) {
-      setError(error.message);
-    }
-  };
-
-  const deleteImage = async (id, path) => { //
+  // delete the image of a user
+  const deleteImage = async (id, path) => {
     try {
         const res = await fetch(`/api/files/${id}`, {
             method: 'DELETE',
@@ -94,7 +81,7 @@ const AdminHomePage = () => {
     }
   };
   
-  // handleCheckboxChange to select users
+  // to select and unselect users
   const handleCheckboxChange = (id) => {
     setSelectedUsers((prevSelected) => {
       if (prevSelected.includes(id)) {
@@ -105,10 +92,9 @@ const AdminHomePage = () => {
     });
   };
 
-
+  // download the data of the selected users in xml form
   const handleXmlDownload = async () => {
-    // Create an array to store the data for all the users
-    const allUserData = [];
+    const allUserData = []; // Create an array to store the data for all the users
 
     // Loop through the selected users and get their data
     for (const userId of selectedUsers) {
@@ -143,9 +129,9 @@ const AdminHomePage = () => {
     document.body.removeChild(link);
   }
 
+  // download the data of the selected users in json form
   const handleJsonDownload = async () => {
-    // Create an array to store the data for all the users
-    const allUserData = [];
+    const allUserData = []; // Create an array to store the data for all the users
 
     // Loop through the selected users and get their data
     for (const userId of selectedUsers) {
@@ -177,6 +163,7 @@ const AdminHomePage = () => {
     document.body.removeChild(link);
   };
 
+  // delete the selected users
   const handleDelete = async () => {
 
     if (selectedUsers.length === 0) {
@@ -230,7 +217,6 @@ const AdminHomePage = () => {
   return (
     <div className="w-full flex flex-col sm:flex-row p-2 mt-20 gap-4">
 
-
       {/* Download data of users or Delete users */}
       <div className="mt-20">
         <div className="shadow-lg p-5 rounded-lg border-t-4 border-blue-400 sticky top-20">
@@ -260,14 +246,12 @@ const AdminHomePage = () => {
             onClick={handleDelete}>
               <HiOutlineTrash size={24}/>
               <span>Press with Caution</span>
-              {/* <HiOutlineExclamation size={24}/> */}
           </button>
         </div>
       </div>
       
       {/* Show the list of the */}
       <div className="w-full p-2">
-        {/* <h1 className="text-2xl font-bold mb-4">Admin Dashboard</h1> */}
         <div className="overflow-hidden shadow-lg p-5 rounded-lg border-t-4 border-blue-400">
           <h2 className="text-xl mb-4">List of Users</h2>
           <table className="min-w-full">

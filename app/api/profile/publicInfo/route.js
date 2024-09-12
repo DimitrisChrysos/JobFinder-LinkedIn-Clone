@@ -2,7 +2,7 @@ import connectMongoDB from "@lib/mongodb";
 import User from "@models/user";
 import { NextResponse } from "next/server";
 
-// This function adds or removes a category from the publicInfo of a user in the database and is called when a POST request is made to /api/profile/publicInfo
+// This function adds or removes a category from the publicInfo of a user in the database
 export async function POST(req) {
     try {
         const { userId, category } = await req.json(); // _id -> postId, publicInfo -> publicInfo
@@ -40,7 +40,7 @@ export async function POST(req) {
     }
 }
 
-// This function returns the publicInfo of a user in the database and is called when a GET request is made to /api/profile/publicInfo
+// This function returns the publicInfo of a user in the database
 export async function GET(req) {
     try {
         const { searchParams } = new URL(req.url);

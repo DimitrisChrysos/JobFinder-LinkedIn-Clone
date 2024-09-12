@@ -78,9 +78,7 @@ const ListingsPage = () => {
   // Add views to the listings
   const addViews = async () => {
     if (!curListingIteration.length) return;
-    console.log("curListingIteration here:", curListingIteration);
     const listingIds = curListingIteration.map(l => l._id);
-    console.log("listingIds here:", listingIds);
     const res = await fetch('/api/listing/views', {
       method: 'PUT',
       headers: {
@@ -101,7 +99,6 @@ const ListingsPage = () => {
     const newSeenListingIndexEnd = seenListingIndexEnd + listingsPerIteration;
 
     const newListings = await selectListings(session?.user.id, newSeenListingIndexStart, newSeenListingIndexEnd);
-    console.log("newListings here:", newListings);
     if (newListings.length === 0) {
       await addViews();
       setNoMoreListings(true);

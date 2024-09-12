@@ -13,7 +13,6 @@ export async function GET(req, {params}) {
             path: 'notifications.userId',
             select: '_id name surname path'
         });
-
         const notificationsList = user.notifications;
 
         return NextResponse.json({ 

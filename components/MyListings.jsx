@@ -36,8 +36,7 @@ const MyListings = () => {
       }
     };
 
-    // Fetch all the listings from the current user, the user's connections and the listings
-    // the connections have liked or commented on
+    // Fetch the user's listings
     const getListings = async () => {
       try {
           let tempListings = [];
@@ -66,7 +65,6 @@ const MyListings = () => {
   
   useEffect(() => {
     if (listings.length !== 1 || listings[0] !== -1) {
-        console.log("allListingsFetched: ", allListingsFetched);
         setAllListingsFetched(true);
     }
   }, [listings]);
@@ -80,7 +78,7 @@ const MyListings = () => {
   }
 
   return (
-    <div className="w-full min-h-screen flex flex-col mt-20 mb-5">
+    <div className="w-full flex flex-col mt-20 mb-5">
       {/* Here goes the text */}
       <div className="w-full text-md font-semibold text-gray-500 flex justify-center mt-1">
         My Listings
@@ -91,8 +89,13 @@ const MyListings = () => {
           {listings && listings
             .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)) // Sort listings by date (latest first)
             .map(p => (
-              <ListingCard p={p} curUser={user} allListingsFetched={allListingsFetched}/>    // Mh to peirakseis // key={p._id} //
+              <ListingCard p={p} curUser={user} allListingsFetched={allListingsFetched}/>
             ))}
+          {!listings.length &&
+          <div className="flex flex-col justify-center items-center mt-10 space-y-4">
+              <span className="text-xl text-gray-500">You have not made any listings yet.</span>
+          </div>
+          }
         </div>
       </div>
     </div>

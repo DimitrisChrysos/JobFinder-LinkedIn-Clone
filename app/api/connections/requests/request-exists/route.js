@@ -2,7 +2,7 @@ import connectMongoDB from "@lib/mongodb";
 import User from "@models/user";
 import { NextResponse } from "next/server";
 
-// This function checks if a connection request to a user exists in the database and is called when a POST request is made to /api/connections/requests/request-exists
+// This function checks if a connection request to a user exists in the database
 export async function POST(req) {
     try {
         const { _id, senderId } = await req.json(); // _id -> receiverId, senderId -> receiverId

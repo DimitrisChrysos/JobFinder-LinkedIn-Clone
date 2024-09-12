@@ -1,7 +1,6 @@
 import connectMongoDB from "@lib/mongodb";
 import User from "@models/user";
 import { NextResponse } from "next/server";
-import bcrypt from "bcryptjs";
 
 // This function updates a user with a specific id and is called when a PUT request is made to /api/profile/[id]
 export async function PUT(req, {params}) {

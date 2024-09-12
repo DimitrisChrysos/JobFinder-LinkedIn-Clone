@@ -11,7 +11,6 @@ export async function POST(req) {
         // If already connected, remove connection
         if (user.connections.includes(connectionId)) {
             
-            console.log("Already connected!123")
             const updateUser = await User.updateOne({ _id : _id}, {
                 $pull : { connections: connectionId }
             })

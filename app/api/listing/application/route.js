@@ -3,7 +3,6 @@ import Listing from "@models/listing";
 import User from "@models/user";
 import { NextResponse } from "next/server";
 
-
 // Add an application to the listing
 export async function POST(req) {
     try {

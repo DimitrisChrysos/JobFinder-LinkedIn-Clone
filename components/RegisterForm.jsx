@@ -7,7 +7,8 @@ import { HiOutlinePhotograph, HiX } from 'react-icons/hi';
 
 const RegisterForm = () => {
 
-    // State variables to store the user's name, email, password, and error message
+    const router = useRouter();
+
     const [name, setName] = useState("");
     const [surname, setSurname] = useState("");
     const [email, setEmail] = useState("");
@@ -27,13 +28,7 @@ const RegisterForm = () => {
     const handleFileChange = (event) => {
         setFile(event.target.files[0]);
         setImgMessage('Change selected image');
-        if (file) {
-            console.log("Selected file:", file);
-        }
     };
-
-    // Next.js hook to navigate to different pages
-    const router = useRouter();
 
     // Function to handle the form submission
     const handleSubmit = async (e) => {
@@ -47,6 +42,7 @@ const RegisterForm = () => {
             return;
         }
 
+        // To not create a user with an admin email
         if (email === "admin@u.com") {
             setError("User already exists");
             return;

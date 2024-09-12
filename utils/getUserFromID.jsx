@@ -1,3 +1,4 @@
+// Get a user by their ID
 export async function getUserById(userId) {
     try {
         const res = await fetch(`/api/profile_info/${userId}`, {cache: "no-store"});

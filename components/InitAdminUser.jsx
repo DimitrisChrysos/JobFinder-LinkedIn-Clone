@@ -4,8 +4,6 @@ const InitAdminUser = async () => {
 
     // Check if the admin already exists in the database before creating him
     try {
-        
-        console.log("Initializing Admin user...");
 
         // Admin user object
         const adminUser = {

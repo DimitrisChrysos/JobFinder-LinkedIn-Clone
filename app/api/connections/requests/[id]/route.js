@@ -2,8 +2,7 @@ import connectMongoDB from "@lib/mongodb";
 import User from "@models/user";
 import { NextResponse } from "next/server";
 
-// This function returns all the connection requests a user has in the database and is called 
-// when a GET request is made to /api/connection/requests/[id]
+// This function returns all the connection requests a user has in the database
 export async function GET(req, {params}) {
     try {
         await connectMongoDB(); // Connect to MongoDB

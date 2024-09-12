@@ -1,3 +1,4 @@
+// Fetch the user row from factorized matrix
 const getUserRow = async (userId) => {
   try {
     const res = await fetch(`/api/matrix-factorization-posts/return-userRow-postRow/${userId}`);
@@ -25,7 +26,7 @@ const getUserRow = async (userId) => {
   }
 }
 
-
+// Select the posts to display to the user
 export async function selectPosts(userId, seenPostIndexStart, seenPostIndexEnd) {
   try {
       

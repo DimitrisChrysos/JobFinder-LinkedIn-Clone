@@ -6,7 +6,6 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { HiOutlineCheck, HiX } from "react-icons/hi";
-import { FaSpinner } from "react-icons/fa";
 import { HiChat,  HiThumbUp } from "react-icons/hi";
 import Loading from "./Loading";
 
@@ -44,7 +43,6 @@ const NotificationsPage = () => {
                 throw new Error('Failed to fetch notifications data');
             }
             const data = await res.json();
-            console.log("notifications: ", data.data);
             setNotifications(data.data);
         } catch (error) {
             setError(error.message);
@@ -71,8 +69,8 @@ const NotificationsPage = () => {
         );
     }
 
+    // remove the request from the requests list
     const handleRejectConnection = async (senderId) => {
-        // remove the request from the requests list
         const res = await fetch('/api/connections/requests', {
             method: 'POST',
             headers: {
@@ -84,6 +82,7 @@ const NotificationsPage = () => {
         setRejected(true);
     };
 
+    // remove the request from the requests list and make the connection
     const handleAcceptConnection = async (senderId) => {
 
         // remove the request from the requests list
@@ -94,7 +93,6 @@ const NotificationsPage = () => {
             },
             body: JSON.stringify({ _id: session?.user.id, senderId: senderId })
         });
-
 
         // make the connection
         const result = await fetch('/api/connections/add-remove-connection', {
@@ -108,6 +106,7 @@ const NotificationsPage = () => {
         setAccepted(true);
     };
 
+    // remove the notification from the notifications list
     const handleRemoveNotification = async (notificationId) => {
 
         try {
@@ -117,12 +116,10 @@ const NotificationsPage = () => {
                     'Content-Type': 'application/json'
                 },
             });
-
             if (!res.ok)
                 throw new Error('Failed to delete notification');
             else
                 setRemoveNotification(true);
-
         } catch (error) {
             console.error('Error:', error.message);
         }
@@ -211,9 +208,6 @@ const NotificationsPage = () => {
                                     :
                                     <span>Deleted user, </span>
                                 }
-                                {/* <Link href={not.userId?._id ? `/view_profile/${not.userId._id}` : `home`} className="text-blue-500 hover:underline">
-                                    {not.userId?.name ? not.userId.name + " " + not.userId.surname: "deleted user"}
-                                </Link> */}
                                 {not.description}
                                 <Link href={`/post_view/${not.postId}`} className="text-blue-500 hover:underline">
                                     post.

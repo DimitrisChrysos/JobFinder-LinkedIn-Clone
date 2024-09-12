@@ -30,6 +30,7 @@ const selectRandomPosts = async (numPosts) => {
     return randomPosts;
 };
 
+// Skill pool for generating realistic skill names
 const skillPool = [
     'JavaScript', 'React', 'Node.js', 'Python', 'HTML/CSS', 'Project Management', 'UI/UX Design',
     'Data Analysis', 'Machine Learning', 'Cloud Computing', 'DevOps', 'Agile Methodologies',
@@ -55,7 +56,6 @@ const generateSkills = (numSkills) => {
 
 // Generate random user
 const generateRandomUser = (hashedPassword, userPosts, userListings, userSkills) => {
-
     return {
         name: faker.person.firstName(),
         surname: faker.person.lastName(),
@@ -92,7 +92,6 @@ const generateRandomPosts = async (user, numPosts) => {
             views: Math.floor(Math.random() * 1000) + 1,
         }
         const newPost = await Post.create(post);
-        // console.log(`Post ${newPost._id} inserted successfully`);
     }
 }
 
@@ -107,7 +106,6 @@ const generateRandomListings = async (user, numListings) => {
             views: Math.floor(Math.random() * 1000) + 1,
         }
         const newListing = await Listing.create(listing);
-        // console.log(`Listing ${newListing._id} inserted successfully`);
     }
 }
 
@@ -121,7 +119,6 @@ const makeRandomConnections = async (user, numConnections) => {
         await User.updateOne({ _id : user._id}, {
             $push: { connections: randomUser._id.toString() }
         })
-        // console.log(`User ${user.name} ${user.surname} connected with ${randomUser.name} ${randomUser.surname}`);
     }
 }
 
@@ -156,8 +153,6 @@ const likeRandomPosts = async (user, numLikes) => {
                 $push: { notifications: { description: " liked your ", userId: userId, postId: randomPostId} }
             })
         }
-
-        // console.log(`User ${user.name} ${user.surname} liked post ${randomPostId} from user ${randomPost.userId}`);
     }
 }
 
@@ -192,15 +187,14 @@ const commentRandomPosts = async (user, numComments) => {
                 $push: { notifications: { description: " commented on your ", userId: userId, postId: randomPostId} }
             })
         }
-
-        // console.log(`User ${user.name} ${user.surname} commented on post ${randomPostId} from user ${randomPost.userId}`);
     }
 }
-            
 
+// Populate the database with numUsers users
 const populateDB = async (numUsers) => {
     try {
 
+        // Connect to the database
         await connectMongoDB();
 
         // Hash the password "123"    
@@ -222,7 +216,6 @@ const populateDB = async (numUsers) => {
             // Generate a random user
             const user = generateRandomUser(hashedPassword, userPosts, userListings, userSkills);
             const newUser = await User.create(user); // Save the user to the database
-            // console.log(`User ${newUser.name} ${newUser.surname} inserted successfully`);
 
             // Create the user's posts
             const postsPromise = generateRandomPosts(newUser, userPosts);
@@ -230,7 +223,7 @@ const populateDB = async (numUsers) => {
             // Create the user's listings
             const listingsPromise = generateRandomListings(newUser, userListings);
 
-            promises.push(postsPromise, listingsPromise);
+            promises.push(postsPromise, listingsPromise); // Add the promises to the array
 
             // Make the user connect with random users, like random posts, and comment on random posts
             // Only if the user is not one of the first 15 users
@@ -244,7 +237,7 @@ const populateDB = async (numUsers) => {
                 // Make the user comment on random posts
                 const commentsPromise = commentRandomPosts(newUser, userComments);
             
-                promises.push(connectionsPromise, likesPromise, commentsPromise);
+                promises.push(connectionsPromise, likesPromise, commentsPromise); // Add the promises to the array
             }
 
             console.log("User ", i + 1, " inserted successfully");

@@ -4,7 +4,6 @@ import { useEffect, useState } from "react"
 import { useSession } from "next-auth/react";
 import { getUserById } from "@utils/getUserFromID";
 import PostCard from "@components/PostCard";
-import { FaSpinner } from "react-icons/fa";
 import Loading from "@components/Loading";
 
 const PostView = ({ params }) => {

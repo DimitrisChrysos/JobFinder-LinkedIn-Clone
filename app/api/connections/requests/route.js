@@ -2,7 +2,7 @@ import connectMongoDB from "@lib/mongodb";
 import User from "@models/user";
 import { NextResponse } from "next/server";
 
-// This function sends/deletes a connection request to a user in the database and is called when a POST request is made to /api/connections/requests
+// This function sends/deletes a connection request to a user in the database
 export async function POST(req) {
     try {
         const { _id, senderId } = await req.json(); // _id -> receiverId, senderId -> receiverId

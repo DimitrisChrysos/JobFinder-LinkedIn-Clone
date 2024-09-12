@@ -15,7 +15,6 @@ export async function GET(req) {
             const matrixChunks = existingMatrix;
 
             // Reconstruct the matrix from the chunks
-            console.log("matrixChunks: ", matrixChunks);
             const reconstructedMatrix = matrixChunks.reduce((acc, chunk) => acc.concat(chunk), []);
 
             return NextResponse.json({

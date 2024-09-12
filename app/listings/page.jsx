@@ -1,7 +1,6 @@
 import ListingsPage from '@components/ListingsPage';
 
 const Listings = () => {
-  
   return (
     <ListingsPage />
   );

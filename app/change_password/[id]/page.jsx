@@ -10,7 +10,6 @@ const PasswordChange = ({ params }) => {
 
     const { id } = params;
 
-    // State variables to store the error message, user data and session data
     const { data: session } = useSession();
     const [error, setError] = useState("");
     const [user, setUser] = useState(null);
@@ -43,7 +42,7 @@ const PasswordChange = ({ params }) => {
         if (id) {
             fetchProfile();
         }
-    }, [id]);   // Dependency array with userId to re-run if userId changes
+    }, [id]);
     
     if (!user) {
         return (

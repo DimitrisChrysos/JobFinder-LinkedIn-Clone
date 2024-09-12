@@ -2,7 +2,7 @@ import connectMongoDB from "@lib/mongodb";
 import { NextResponse } from "next/server";
 import Post from "@models/post";
 
-// This function returns all the posts in the database and is called when a GET request is made to /api/post/get-all-posts
+// This function returns all the posts in the database
 export async function GET(req) {
     try {
         await connectMongoDB(); // Connect to MongoDB
@@ -12,6 +12,6 @@ export async function GET(req) {
         }
         return NextResponse.json({posts}); // Return the posts
     } catch (error) {
-        return NextResponse.json({message: "An error occurred while fetching the posts."}, {status: 500});    // Return an error message
+        return NextResponse.json({message: "An error occurred while fetching the posts."}, {status: 500}); // Return an error message
     }
 }

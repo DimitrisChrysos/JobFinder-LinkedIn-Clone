@@ -1,9 +1,7 @@
 import { getUserById } from "@utils/getUserFromID";
 import { useEffect, useState } from "react"
 import { useSession } from 'next-auth/react';
-import Link from "next/link";
 import Image from "next/image";
-import Loading from "./Loading";
 
 const ChatCard = ( { chat } ) => {
     const [user, setUser] = useState(null);

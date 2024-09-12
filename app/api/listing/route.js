@@ -2,15 +2,13 @@ import connectMongoDB from "@lib/mongodb";
 import { NextResponse } from "next/server";
 import Listing from "@models/listing";
 
-// This function creates a listing to the database and is called when a POST request is made to /api/listing
+// This function creates a listing to the database
 export async function POST(req) {
     try {
         const {userId, job_pos, description, path} = await req.json();
-        console.log("userId here:", userId, "job_pos here:", job_pos, "description here:", description, "path here:", path);
 
         await connectMongoDB(); // Connect to MongoDB
         let listing;
-        console.log("xm???!")
         if (!path) {
             if (description == "" && job_pos != "")
                 listing = await Listing.create({ userId, job_pos, description: "no-text", path: "no-file" });
@@ -39,7 +37,6 @@ export async function GET(req) {
     try {
         const id = req.nextUrl.searchParams.get("id"); // Get the id from the query parameters
         await connectMongoDB(); // Connect to MongoDB
-
 
         const listings = await Listing.find({ userId: id }); // Get the listings
         if (!listings) {

@@ -3,7 +3,7 @@ import User from "@models/user";
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 
-// This function updates user's password with a specific id and is called when a PUT request is made to /api/password/[id]
+// This function updates user's password with a specific id
 export async function PUT(req, {params}) {
     try {
         const { id } = params;

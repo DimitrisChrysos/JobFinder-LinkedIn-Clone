@@ -1,9 +1,8 @@
 import connectMongoDB from "@lib/mongodb";
 import User from "@models/user";
 import { NextResponse } from "next/server";
-import bcrypt from "bcryptjs";
 
-// This function updates a user with a specific id and is called when a PUT request is made to /api/profile/[id]
+// This function updates a user with a specific id
 export async function PUT(req, {params}) {
     try {
         const { id } = params;
@@ -21,7 +20,7 @@ export async function PUT(req, {params}) {
     }
 }
 
-// This function returns a user with a specific id and is called when a GET request is made to /api/profile/[id]
+// This function returns a user with a specific id
 export async function GET(req, {params}) {
     try {
         const { id } = params;
@@ -32,6 +31,6 @@ export async function GET(req, {params}) {
         }
         return NextResponse.json({user}); // Return the user
     } catch (error) {
-        return NextResponse.json({message: "An error occurred while fetching user."}, {status: 500});    // Return an error message
+        return NextResponse.json({message: "An error occurred while fetching user."}, {status: 500}); // Return an error message
     }
 }

@@ -2,6 +2,7 @@ import { getUserById } from "./getUserFromID";
 
 const baseUrl = 'https://localhost:3000'; // Base URL of the API
 
+// Fetch all listings
 const getListings = async () => {
     try {
         const url = new URL('/api/listing/get-all-listings', baseUrl);
@@ -32,8 +33,6 @@ export async function geSkillsToDescriptionMatch(userId) {
         const trimmedSkills = singleSpacedSkills.trim();
         const skillsArray = trimmedSkills.split(' ');
         
-        console.log("skills: ", skillsArray);
-
         // Fetch all listings
         const listings = await getListings();
 
@@ -59,7 +58,6 @@ export async function geSkillsToDescriptionMatch(userId) {
             }
         }
 
-        console.log("Listings with match counts: ", listingsWithMatchCount);
         return listingsWithMatchCount;
     } catch (error) {
         console.log("Error in recommendListingsBasedOnSkills: ", error);

@@ -1,5 +1,6 @@
 import { geSkillsToDescriptionMatch } from "./recommendListingsBasedOnSkills";
 
+// Fetch the user row from factorized matrix
 const getUserRow = async (userId) => {
   try {
     const res = await fetch(`/api/matrix-factorization-listings/return-userRow-listingRow/${userId}`);
@@ -16,7 +17,6 @@ const getUserRow = async (userId) => {
     else if (data.message == "User row found") {
       const userRow = data.userRow;
       const firstRow = data.firstRowOfFirstChunk;
-      console.log("firstRow 123 123: ", firstRow.length);
       return { userRow, firstRow };
     }
     else {
@@ -27,6 +27,7 @@ const getUserRow = async (userId) => {
   }
 }
 
+// Select the listings to display to the user
 export async function selectListings(userId, seenListingIndexStart, seenListingIndexEnd) {
     try {
 
@@ -54,7 +55,6 @@ export async function selectListings(userId, seenListingIndexStart, seenListingI
             value: actualRow[index] + matchCount*0.1*actualRow[index] // Add the match count to the value
           }
         });
-        console.log("listingValuePairs here:", listingValuePairs);
 
         // Sort the pairs by value in descending order, then select the top pairs
         // and then extract the listing IDs from the top pairs
@@ -80,7 +80,6 @@ export async function selectListings(userId, seenListingIndexStart, seenListingI
             throw new Error('Failed to fetch listings');
         }
         const data = await res.json();
-        // console.log("how many listings?", data.listings.length);
         return data.listings;
       }
 

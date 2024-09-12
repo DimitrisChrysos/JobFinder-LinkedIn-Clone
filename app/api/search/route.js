@@ -2,6 +2,7 @@ import User from "@models/user";
 import connectMongoDB from "@lib/mongodb";
 import { NextResponse } from 'next/server';
 
+// This function searches for users in the database that include on their name or surname the query
 export async function GET(req) {
   try {
     const { searchParams } = new URL(req.url);

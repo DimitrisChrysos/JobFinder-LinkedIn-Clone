@@ -1,10 +1,9 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { writeFile } from "fs/promises";
 import { join } from "path";
-import { promises as fs } from 'fs';
 
 // This route is used to upload a file to the server
-// The file is saved in the public/assets/jpeg_images directory
+// The file is saved in the public/assets/post_files directory
 // The file is saved with the name of the user's email address to ensure uniqueness
 export async function POST(req) {
     try {
@@ -24,7 +23,6 @@ export async function POST(req) {
         const rootDir = process.cwd();
         const newName = post_counter + "_" + email + "_" + file.name;
         const path = join(rootDir, 'public/assets', 'post_files', newName);
-        console.log("path: ", path);
         
         await writeFile(path, buffer);
 

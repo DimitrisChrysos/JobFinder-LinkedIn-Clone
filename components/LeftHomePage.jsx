@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import {  HiOutlineUserCircle } from "react-icons/hi";
+import { HiOutlineUserCircle } from "react-icons/hi";
 import { HiOutlineUserGroup } from "react-icons/hi";
 
 const LeftHomePage = ({ user }) => {

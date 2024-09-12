@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { HiOutlineUpload, HiX } from "react-icons/hi";
 import { join } from "path";
 
@@ -19,11 +19,9 @@ const CreateListing = ({ user, listings, setListings}) => {
     // Function to handle the file change event on Create Listing
     const handleFileChange = (event) => {
         setFile(event.target.files[0]);
-        if (file) {
-            console.log("Selected file:", file);
-        }
     };
 
+    // Function to handle the job position change event on Create Listing
     const handleJobPositionChange = (e) => {
       const value = e.target.value;
       if (value.length > 50) {
@@ -222,7 +220,6 @@ const CreateListing = ({ user, listings, setListings}) => {
               <button 
                 type="submit"
                 className={`bg-blue-400 text-white border border-blue-400 font-bold cursor-pointer px-6 py-2 hover:bg-white hover:text-blue-400 transition-colors duration-150 ${isButtonDisabled ? 'opacity-50 cursor-not-allowed' : ''}`}
-                // onClick={handleCreatePostClick}
                 disabled={isButtonDisabled}
               >
                   Create Listing

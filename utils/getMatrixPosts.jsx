@@ -1,6 +1,6 @@
+// Get the factorized matrix for the posts
 export async function getMatrixPosts() {
     try {
-        // const url = new URL('/api/matrix-factorization/matrix-exists', baseUrl);
         const res = await fetch('/api/matrix-factorization-posts/matrix-exists');
         if (!res.ok) {
             throw new Error('Failed to fetch the matrix');

@@ -10,7 +10,6 @@ export async function GET(req, {params}) {
         const { id } = params;
         const userId = id;
 
-        console.log("userId: ", userId);
         
         // Fetch the first chunk from the collection
         const firstChunk = await MatrixPosts.findOne().sort({ createdAt: 1 }).limit(1);
@@ -31,7 +30,6 @@ export async function GET(req, {params}) {
                 $elemMatch: { 0: userId }  // Check if the first element of any sub-array is userId
             } 
         });
-        // console.log("chunk: ", chunk);
 
         if (chunk) {
             // Find the row corresponding to the user within the chunk

@@ -2,7 +2,7 @@ import connectMongoDB from "@lib/mongodb";
 import Post from "@models/post";
 import { NextResponse } from "next/server";
 
-// This function returns a post with a specific id and is called when a GET request is made to /api/post/[id]
+// This function returns a post with a specific id
 export async function GET(req, {params}) {
     try {
         const { id } = params;
@@ -13,6 +13,6 @@ export async function GET(req, {params}) {
         }
         return NextResponse.json({post}); // Return the post
     } catch (error) {
-        return NextResponse.json({message: "An error occurred while fetching post."}, {status: 500});    // Return an error message
+        return NextResponse.json({message: "An error occurred while fetching post."}, {status: 500}); // Return an error message
     }
 }

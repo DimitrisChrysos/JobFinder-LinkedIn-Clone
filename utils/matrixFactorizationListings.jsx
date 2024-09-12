@@ -104,7 +104,6 @@ const createMatrixR = (n, m, users, listings) => {
 // Matrix Factorization
 const matrixFactorization = (R, P, Q, K, alpha, beta, steps) => {
     try {
-        // TODO: fill in the code for matrix factorization
         for (let step = 0; step < steps; step++) {
             for (let i = 0; i < R.length; i++) {
                 for (let j = 0; j < R[i].length; j++) {
@@ -215,39 +214,7 @@ const startMatrixFactorization = async () => {
         // Get the users and listings
         const [users, listings] = await Promise.all([getUsers(), getListings()]);
 
-        // // Get the table dimensions
-        // const n = users.length;
-        // const m = listings.length;
-
-        // // Create the R table with users and listings
-        // const rTable = createMatrixR(n, m, users, listings);
-
-        // // // Extract the actual ratings matrix without headers for matrix factorization
-        // const R = rTable.slice(1).map(row => row.slice(1));
-
-        // // TODO: try different values for K until the best one is found
-        // const K = 2; // Set the number of latent features K
-        // const alpha = 0.0002; // Set the learning rate alpha
-        // const beta = 0.002; // Set the regularization parameter beta
-        // const steps = 1000; // Set the number of iterations
-
-        // // Create the P(n*K) and Q(K*m) matrices
-        // const pTable = Array(n).fill().map(() => Array(K).fill().map(() => Math.random()));
-        // const qTable = Array(K).fill().map(() => Array(m).fill().map(() => Math.random()));
-
-        // // Perform matrix factorization on the R table
-        // const { P: newP, Q: newQ } = await matrixFactorization(R, pTable, qTable, K, alpha, beta, steps);
-        
-        // const R_hat = getFactorizedMatrix(R, newP, newQ, users, listings);
-        
-        // // Post the matrix to the database
-        // const matrix = R_hat;
-        // postMatrix(matrix).then(data => {
-        //     console.log('Matrix factorization completed:', data);
-        // }).catch(error => {
-        //     console.error('Error during matrix factorization:', error);
-        // });
-
+        // Create the matrix R on a worker thread
         const worker = new Worker('./utils/matrixFactorizationListingWorker.js');
         worker.postMessage({ users, listings });
 
@@ -273,8 +240,6 @@ const startMatrixFactorization = async () => {
         throw error;
     }
 };
-
-
 
 // Function to run MatrixFactorization every 30 minutes
 async function runMatrixFactorizationListingsPeriodically() {

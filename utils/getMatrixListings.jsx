@@ -1,3 +1,4 @@
+// Get the factorized matrix for the listings
 export async function getMatrixListings() {
     try {
         const res = await fetch('/api/matrix-factorization-listings/matrix-exists');

@@ -35,11 +35,10 @@ const DeleteAccountBtn = ({ user }) => {
     router.push(`/view_profile/${user._id}`);
   }
 
+  // Function to delete the user's account
   const deleteAccount = async () => {
 
     const confirmDelete = confirm(`Are you sure you want to delete account "${user.name} ${user.surname}"?`);
-  
-    
     if (confirmDelete) {
       
       if (user.path !== "/assets/logo_images/default-avatar-icon.jpg")

@@ -1,5 +1,3 @@
-// export { default } from 'next-auth/middleware';
-
 import { withAuth } from 'next-auth/middleware';
 
 export default withAuth({
@@ -8,7 +6,7 @@ export default withAuth({
     },
   });
 
-// to restrict access to the home page to authenticated users only
+// to restrict access on the following pages, to authenticated users only
 export const config = { 
     matcher: [
         "/change_password/:path*",

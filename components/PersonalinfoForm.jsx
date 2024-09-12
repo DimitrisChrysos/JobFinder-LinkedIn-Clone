@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 
@@ -10,7 +10,6 @@ const PersonalInfoForm = ({ user }) => {
   const { data: session } = useSession();
   const router = useRouter();
 
-  // State variables to store the user's name, surname, email, phone number, password, confirm password, and file
   const [newJobPos, setNewJobPos] = useState(user?.job_position);
   const [newEmploymentAgency, setNewEmploymentAgency] = useState(user?.employment_agency);
   const [newExperience, setNewExperience] = useState(user?.experience);
@@ -32,7 +31,6 @@ const PersonalInfoForm = ({ user }) => {
       }
       const data = await res.json();
       const publicInfo = data.publicInfo;
-      console.log("Public Info: ", publicInfo);
       
       if (publicInfo.includes('Job Position'))
         setPublicJobPos(!publicJobPos);
@@ -51,7 +49,6 @@ const PersonalInfoForm = ({ user }) => {
   };
 
   const handleCheckboxChange = async (text) => {
-    console.log(text);
     setIsCheckboxDisabled(true);
 
     try {

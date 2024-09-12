@@ -1,7 +1,6 @@
 'use client';
 
 import React from 'react';
-import { AiOutlineSearch } from 'react-icons/ai';
 import { useState } from 'react';
 import Link from "next/link";
 import { HiOutlineSearch } from 'react-icons/hi';

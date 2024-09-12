@@ -2,7 +2,7 @@
 
 import Image from "next/image"
 import Link from "next/link"
-import { signIn, signOut, useSession, getProviders } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 
@@ -31,7 +31,7 @@ const Nav = () => {
       if (session?.user.id) {
           fetchProfile();
       }
-  }, [session?.user?.id]);   // Dependency array with userId to re-run if userId changes
+  }, [session?.user?.id]);
   
   if (error) {
       return <div>Error: {error}</div>;
@@ -63,8 +63,7 @@ const Nav = () => {
         </p>
       </Link>
       
-      {/* If the user is signed in, display the Sign Out and Home buttons
-          If the user is not signed in, display the Sign In and Register buttons */}
+      {/* Display the appropriate buttons for the signed-in/signed-out/admin users */}
       {session?.user ? (
         <div className="flex items-center space-x-3">
           <button 
@@ -74,7 +73,6 @@ const Nav = () => {
               Sign Out
           </button>
 
-          {/* If admin user management page else home*/}
           {session?.user?.admin ? (
             <>
               <Link href='/conversations' className='nav_btn'>

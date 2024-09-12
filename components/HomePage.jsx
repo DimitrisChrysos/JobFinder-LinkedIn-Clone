@@ -101,7 +101,6 @@ const HomePage = () => {
     const newSeenPostIndexEnd = seenPostIndexEnd + postsPerIteration;
 
     const newPosts = await selectPosts(session?.user.id, newSeenPostIndexStart, newSeenPostIndexEnd);
-    console.log("newPosts here:", newPosts);
     if (newPosts.length === 0) {
       await addViews();
       setNoMorePosts(true);

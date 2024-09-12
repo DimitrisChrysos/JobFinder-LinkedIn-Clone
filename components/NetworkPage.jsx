@@ -4,10 +4,8 @@ import SearchBar from "./SearchBar";
 import Image from "next/image"
 import { useSession } from 'next-auth/react';
 import { useState, useEffect } from "react";
-import { redirect, useRouter } from "next/navigation";
 import Link from "next/link";
 import { getUserById } from "@utils/getUserFromID";
-import { FaSpinner } from "react-icons/fa";
 import Loading from "./Loading";
 
 const NetworkPage = ({ userId }) => {
@@ -41,7 +39,7 @@ const NetworkPage = ({ userId }) => {
         fetchUser();
         fetchConnectionsInfo();
     }
-  }, [userId]);   // Dependency array with userId to re-run if userId changes
+  }, [userId]);
 
   if (error) {
       return <div>Error: {error}</div>;
@@ -54,7 +52,7 @@ const NetworkPage = ({ userId }) => {
   }
 
   return (
-    <div className="mt-20">
+    <div className="mt-20 mb-10">
 
       <div className="mt-8">
         <SearchBar />

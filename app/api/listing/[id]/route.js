@@ -2,7 +2,7 @@ import connectMongoDB from "@lib/mongodb";
 import Listing from "@models/listing";
 import { NextResponse } from "next/server";
 
-// This function returns a listing with a specific id and is called when a GET request is made to /api/listing/[id]
+// This function returns a listing with a specific id
 export async function GET(req, {params}) {
     try {
         const { id } = params;
@@ -13,6 +13,6 @@ export async function GET(req, {params}) {
         }
         return NextResponse.json({listing}); // Return the listing
     } catch (error) {
-        return NextResponse.json({message: "An error occurred while fetching listing."}, {status: 500});    // Return an error message
+        return NextResponse.json({message: "An error occurred while fetching listing."}, {status: 500}); // Return an error message
     }
 }

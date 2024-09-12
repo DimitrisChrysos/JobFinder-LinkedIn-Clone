@@ -33,7 +33,6 @@ const SettingsPage = ({ user }) => {
   const { data: session } = useSession();
   const router = useRouter();
 
-  // State variables to store the user's name, surname, email, phone number, password, confirm password, and file
   const [newName, setNewName] = useState(user?.name);
   const [newSurname, setNewSurname] = useState(user?.surname);
   const [newEmail, setNewEmail] = useState(user?.email);

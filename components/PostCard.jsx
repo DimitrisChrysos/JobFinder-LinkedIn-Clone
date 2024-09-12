@@ -50,8 +50,6 @@ const PostCard = ({p, curUser}) => {
 
     const handleCommentPost = async () => {
 
-        // e.preventDefault();
-
         if (text) {
             const res = await fetch('/api/post/comment', {
                 method: 'POST',

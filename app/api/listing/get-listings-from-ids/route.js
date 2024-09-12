@@ -16,11 +16,11 @@ export async function POST(req) {
         // Create a map of listings for quick lookup
         const listingMap = new Map(listings.map(listing => [listing._id.toString(), listing]));
 
-        // Sort the listings based on the order of the ids array
-        const sortedListings = ids.map(id => listingMap.get(id)).filter(listing => listing !== undefined);
+        // Filter the listings based on the ids existance
+        const filteredListings = ids.map(id => listingMap.get(id)).filter(listing => listing !== undefined);
 
-        return NextResponse.json({listings: sortedListings }); // Return the listings
+        return NextResponse.json({listings: filteredListings }); // Return the listings
     } catch (error) {
-        return NextResponse.json({message: "An error occurred while fetching the listings."}, {status: 500});    // Return an error message
+        return NextResponse.json({message: "An error occurred while fetching the listings."}, {status: 500}); // Return an error message
     }
 }

@@ -5,7 +5,6 @@ import { useSession } from "next-auth/react";
 import { useEffect, useState, useRef } from "react"
 import ChatCard from "./ChatCard";
 import Image from "next/image";
-import { FaSpinner } from "react-icons/fa";
 import Loading from "./Loading";
 
 const ConversationsPage = ({ user }) => {
@@ -18,7 +17,6 @@ const ConversationsPage = ({ user }) => {
   const [otherChatUserId, setOtherChatUserId] = useState(null);
   const [otherChatUser, setOtherChatUser] = useState(null);
   const [curChat, setCurChat] = useState(null);
-  const [error, setError] = useState(null);
   const messagesEndRef = useRef(null);
   const [prevMessagesLength, setPrevMessagesLength] = useState(messages.length);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -298,7 +296,7 @@ const ConversationsPage = ({ user }) => {
           <div ref={messagesEndRef} />
         </div>
 
-        {/* Fixed send message form at the bottom of the page*/}
+        {/* Fixed at place, send message form at the bottom of the page*/}
         {curChat && (
           <form 
             onSubmit={handleSendMessage} 

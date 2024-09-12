@@ -196,10 +196,9 @@ const RightHomePage = ({ user, posts, setPosts}) => {
             </div>
           </div>
 
-          <button 
+          <button
             type="submit"
             className={`bg-blue-400 text-white font-bold cursor-pointer px-6 py-2 ${isButtonDisabled ? 'opacity-50 cursor-not-allowed' : ''}`}
-            // onClick={handleCreatePostClick}
             disabled={isButtonDisabled}
           >
               Create Post
