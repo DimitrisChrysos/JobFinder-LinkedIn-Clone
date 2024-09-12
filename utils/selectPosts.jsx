@@ -15,7 +15,6 @@ const getUserRow = async (userId) => {
     else if (data.message == "User row found") {
       const userRow = data.userRow;
       const firstRow = data.firstRowOfFirstChunk;
-      console.log("firstRow 123 123: ", firstRow.length);
       return { userRow, firstRow };
     }
     else {
@@ -70,7 +69,6 @@ export async function selectPosts(userId, seenPostIndexStart, seenPostIndexEnd) 
           throw new Error('Failed to fetch posts');
       }
       const data = await res.json();
-      console.log("data.posts: ", data.posts);
       return data.posts;
     }
     
