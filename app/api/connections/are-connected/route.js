@@ -2,7 +2,7 @@ import connectMongoDB from "@lib/mongodb";
 import User from "@models/user";
 import { NextResponse } from "next/server";
 
-// This function checks if two users are connected in the database and is called when a POST request is made to /api/connections/are-connected
+// This function checks if two users are connected in the database
 export async function POST(req) {
     try {
         const { id1, id2 } = await req.json();

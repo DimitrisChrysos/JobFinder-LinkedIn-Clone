@@ -2,6 +2,7 @@ import connectMongoDB from "@lib/mongodb";
 import { NextResponse } from "next/server";
 import MatrixPosts from "@models/matrixPosts";
 
+// This function deletes all the chunks of the matrix
 export async function DELETE(req) {
     try {
         await connectMongoDB(); // Connect to MongoDB

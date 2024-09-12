@@ -2,6 +2,7 @@ import connectMongoDB from "@lib/mongodb";
 import User from "@models/user";
 import { NextResponse } from "next/server";
 
+// This function adds or removes a connection between two users
 export async function POST(req) {
     try {
         const { _id, connectionId } = await req.json(); // Get the userId and connectionId from the request body
