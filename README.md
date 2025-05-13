@@ -2,6 +2,9 @@
 
 A feature-rich professional networking and job posting platform built for the Τεχνολογίες Εφαρμογών Διαδικτύου (TEDI) course, Summer 2024. Developed with **Next.js**, **MongoDB Atlas**, **Tailwind CSS**, and **Node.js**, the app includes authentication, posts, listings, messaging, and a matrix factorization-based recommendation engine.
 
+### Note:
+- For a more detailed explanation (in Greek) about the app, its features, and the available endpoints, check the ```report.pdf``` file.
+
 ---
 
 ## 👥 Team
